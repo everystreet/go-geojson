@@ -1,28 +1,24 @@
 package geojson
 
 // Point is a single set of Coordinates.
-type Point struct {
-	Coordinates
-}
+type Point Coordinates
 
 // MarshalJSON returns the JSON encoding of the Point.
 func (p *Point) MarshalJSON() ([]byte, error) {
-	return p.Coordinates.MarshalJSON()
+	return (*Coordinates)(p).MarshalJSON()
 }
 
 // UnmarshalJSON parses the JSON-encoded data and stores the result.
 func (p *Point) UnmarshalJSON(data []byte) error {
-	return p.Coordinates.UnmarshalJSON(data)
+	return (*Coordinates)(p).UnmarshalJSON(data)
 }
 
 // NewPoint returns a Point Feature with the specified longitude and latitude.
 func NewPoint(long, lat float64, props ...Property) *Feature {
 	return &Feature{
 		Geometry: Point{
-			Coordinates{
-				Longitude: long,
-				Latitude:  lat,
-			},
+			Longitude: long,
+			Latitude:  lat,
 		},
 		Properties: PropertyList(props),
 	}
@@ -32,11 +28,9 @@ func NewPoint(long, lat float64, props ...Property) *Feature {
 func NewPointWithElevation(long, lat, elevation float64, props ...Property) *Feature {
 	return &Feature{
 		Geometry: Point{
-			Coordinates{
-				Longitude: long,
-				Latitude:  lat,
-				Elevation: NewOptionalFloat64(elevation),
-			},
+			Longitude: long,
+			Latitude:  lat,
+			Elevation: NewOptionalFloat64(elevation),
 		},
 		Properties: PropertyList(props),
 	}
