@@ -27,7 +27,10 @@ const (
 
 // Feature consists of a specific geometry type and a list of properties.
 type Feature struct {
-	Geometry   interface{}
+	Geometry interface {
+		json.Marshaler
+		json.Unmarshaler
+	}
 	Properties PropertyList
 }
 
@@ -36,7 +39,7 @@ func (f *Feature) MarshalJSON() ([]byte, error) {
 	var geom geo
 
 	switch g := f.Geometry.(type) {
-	case Point:
+	case *Point:
 		geom.Type = PointType
 		geom.Coords = &g
 	default:
@@ -105,7 +108,7 @@ func (f *Feature) UnmarshalJSON(data []byte) error {
 		if err := json.Unmarshal(*geo.Coords, &p); err != nil {
 			return errors.Wrap(err, "failed to unmarshal "+PointType)
 		}
-		f.Geometry = p
+		f.Geometry = &p
 	default:
 		return errors.New("unknown geometry type " + geo.Type)
 	}

@@ -16,7 +16,7 @@ func (p *Point) UnmarshalJSON(data []byte) error {
 // NewPoint returns a Point Feature with the specified longitude and latitude.
 func NewPoint(long, lat float64, props ...Property) *Feature {
 	return &Feature{
-		Geometry: Point{
+		Geometry: &Point{
 			Longitude: long,
 			Latitude:  lat,
 		},
@@ -27,7 +27,7 @@ func NewPoint(long, lat float64, props ...Property) *Feature {
 // NewPointWithElevation returns a Point Feature with the specified longitude, latitude and elevation.
 func NewPointWithElevation(long, lat, elevation float64, props ...Property) *Feature {
 	return &Feature{
-		Geometry: Point{
+		Geometry: &Point{
 			Longitude: long,
 			Latitude:  lat,
 			Elevation: NewOptionalFloat64(elevation),
