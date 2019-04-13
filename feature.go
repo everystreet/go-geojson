@@ -41,7 +41,11 @@ func (f *Feature) MarshalJSON() ([]byte, error) {
 	switch g := f.Geometry.(type) {
 	case *Point:
 		geom.Type = PointType
-		geom.Coords = &g
+		geom.Coords = g
+	case *MultiPoint:
+		fmt.Println("MultiPoint")
+		geom.Type = MultiPointType
+		geom.Coords = g
 	default:
 		return nil, fmt.Errorf("unknown geometry type: %v", g)
 	}
@@ -109,6 +113,12 @@ func (f *Feature) UnmarshalJSON(data []byte) error {
 			return errors.Wrap(err, "failed to unmarshal "+PointType)
 		}
 		f.Geometry = &p
+	case MultiPointType:
+		m := MultiPoint{}
+		if err := json.Unmarshal(*geo.Coords, &m); err != nil {
+			return errors.Wrap(err, "failed to unmarshal "+MultiPointType)
+		}
+		f.Geometry = &m
 	default:
 		return errors.New("unknown geometry type " + geo.Type)
 	}
@@ -123,6 +133,9 @@ type feature struct {
 }
 
 type geo struct {
-	Type   string      `json:"type"`
-	Coords interface{} `json:"coordinates"`
+	Type   string `json:"type"`
+	Coords interface {
+		json.Marshaler
+		json.Unmarshaler
+	} `json:"coordinates"`
 }

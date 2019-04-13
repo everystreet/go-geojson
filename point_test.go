@@ -22,7 +22,7 @@ func TestMarshalPoint(t *testing.T) {
 				"type": "Feature",
 				"geometry": {
 					"type": "Point",
-					"coordinates": [9.189982,45.4642035,125]
+					"coordinates": [9.189982, 45.4642035, 125]
 				}
 			}`,
 		},
@@ -33,7 +33,7 @@ func TestMarshalPoint(t *testing.T) {
 				"type": "Feature",
 				"geometry": {
 					"type": "Point",
-					"coordinates": [9.189982,45.4642035]
+					"coordinates": [9.189982, 45.4642035]
 				}
 			}`,
 		},
@@ -57,23 +57,23 @@ func TestUnmarshalPoint(t *testing.T) {
 		{
 			"with elevation",
 			`{
-			"type": "Feature",
-			"geometry": {
-				"type": "Point",
-				"coordinates": [9.189982,45.4642035,125]
-			}
-		}`,
+				"type": "Feature",
+				"geometry": {
+					"type": "Point",
+					"coordinates": [9.189982, 45.4642035, 125]
+				}
+			}`,
 			geojson.NewPointWithElevation(9.189982, 45.4642035, 125),
 		},
 		{
 			"without elevation",
 			`{
-			"type": "Feature",
-			"geometry": {
-				"type": "Point",
-				"coordinates": [9.189982,45.4642035]
-			}
-		}`,
+				"type": "Feature",
+				"geometry": {
+					"type": "Point",
+					"coordinates": [9.189982, 45.4642035]
+				}
+			}`,
 			geojson.NewPoint(9.189982, 45.4642035),
 		},
 	}
