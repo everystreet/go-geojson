@@ -13,6 +13,23 @@ type Coordinates struct {
 	Elevation OptionalFloat64
 }
 
+// NewCoordinates from longitude and latitude.
+func NewCoordinates(long, lat float64) Coordinates {
+	return Coordinates{
+		Longitude: long,
+		Latitude:  lat,
+	}
+}
+
+// NewCoordinatesWithElevation from longitude, latitude and elevation.
+func NewCoordinatesWithElevation(long, lat, elevation float64) Coordinates {
+	return Coordinates{
+		Longitude: long,
+		Latitude:  lat,
+		Elevation: NewOptionalFloat64(elevation),
+	}
+}
+
 // MarshalJSON returns the JSON encoding of the Coordinates.
 // The JSON encoding is an array of numbers with the longitude followed by the latitude, and optional elevation.
 func (c *Coordinates) MarshalJSON() ([]byte, error) {
