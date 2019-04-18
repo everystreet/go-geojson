@@ -16,8 +16,37 @@ func TestMarshalFeature(t *testing.T) {
 		expected string
 	}{
 		{
+			"simple",
+			geojson.NewPoint(9.189982, 45.4642035),
+			`{
+				"type": "Feature",
+				"geometry": {
+					"type": "Point",
+					"coordinates": [9.189982,45.4642035]
+				}
+			}`,
+		},
+		{
+			"with bbox",
+			geojson.NewPoint(9.189982, 45.4642035).WithBoundingBox(
+				geojson.NewCoordinates(7.1827768, 43.7032932),
+				geojson.NewCoordinates(11.2387051, 47.2856026),
+			),
+			`{
+				"type": "Feature",
+				"bbox": [
+					7.1827768,  43.7032932,
+					11.2387051, 47.2856026
+				],
+				"geometry": {
+					"type": "Point",
+					"coordinates": [9.189982,45.4642035]
+				} 
+			}`,
+		},
+		{
 			"with properties",
-			geojson.NewPoint(9.189982, 45.4642035, geojson.StringProp("city", "Milan")),
+			geojson.NewPoint(9.189982, 45.4642035).AddProperty("city", "Milan"),
 			`{
 				"type": "Feature",
 				"geometry": {
@@ -26,17 +55,6 @@ func TestMarshalFeature(t *testing.T) {
 				},
 				"properties": {
 					"city": "Milan"
-				}
-			}`,
-		},
-		{
-			"without properties",
-			geojson.NewPoint(9.189982, 45.4642035),
-			`{
-				"type": "Feature",
-				"geometry": {
-					"type": "Point",
-					"coordinates": [9.189982,45.4642035]
 				}
 			}`,
 		},
@@ -58,21 +76,7 @@ func TestUnmarshalFeature(t *testing.T) {
 		expected *geojson.Feature
 	}{
 		{
-			"with properties",
-			`{
-				"type": "Feature",
-				"geometry": {
-					"type": "Point",
-					"coordinates": [9.189982,45.4642035]
-				},
-				"properties": {
-					"city": "Milan"
-				}
-			}`,
-			geojson.NewPoint(9.189982, 45.4642035, geojson.StringProp("city", "Milan")),
-		},
-		{
-			"without properties",
+			"simple",
 			`{
 				"type": "Feature",
 				"geometry": {
@@ -81,6 +85,38 @@ func TestUnmarshalFeature(t *testing.T) {
 				}
 			}`,
 			geojson.NewPoint(9.189982, 45.4642035),
+		},
+		{
+			"with bbox",
+			`{
+				"type": "Feature",
+				"bbox": [
+					7.1827768,  43.7032932,
+					11.2387051, 47.2856026
+				],
+				"geometry": {
+					"type": "Point",
+					"coordinates": [9.189982,45.4642035]
+				} 
+			}`,
+			geojson.NewPoint(9.189982, 45.4642035).WithBoundingBox(
+				geojson.NewCoordinates(7.1827768, 43.7032932),
+				geojson.NewCoordinates(11.2387051, 47.2856026),
+			),
+		},
+		{
+			"with properties",
+			`{
+				"type": "Feature",
+				"geometry": {
+					"type": "Point",
+					"coordinates": [9.189982,45.4642035]
+				},
+				"properties": { 
+					"city": "Milan"
+				}
+			}`,
+			geojson.NewPoint(9.189982, 45.4642035).AddProperty("city", "Milan"),
 		},
 	}
 

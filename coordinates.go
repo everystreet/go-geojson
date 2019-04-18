@@ -54,14 +54,15 @@ func (c *Coordinates) UnmarshalJSON(data []byte) error {
 		return err
 	}
 
-	if len(coords) < 2 {
-		return errors.New("incomplete coordinates")
-	}
-
-	c.Longitude = coords[0]
-	c.Latitude = coords[1]
-	if len(coords) > 2 {
+	switch len(coords) {
+	case 3:
 		c.Elevation = NewOptionalFloat64(coords[2])
+		fallthrough
+	case 2:
+		c.Longitude = coords[0]
+		c.Latitude = coords[1]
+	default:
+		return errors.New("invalid coordinates")
 	}
 	return nil
 }

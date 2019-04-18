@@ -9,10 +9,9 @@ import (
 type MultiPoint []Coordinates
 
 // NewMultiPoint returns a MultiPoint from the specified set of coordinates.
-func NewMultiPoint(coords []Coordinates, props ...Property) *Feature {
+func NewMultiPoint(coords ...Coordinates) *Feature {
 	return &Feature{
-		Geometry:   (*MultiPoint)(&coords),
-		Properties: PropertyList(props),
+		Geometry: (*MultiPoint)(&coords),
 	}
 }
 

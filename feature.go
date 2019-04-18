@@ -31,6 +31,7 @@ type Feature struct {
 		json.Marshaler
 		json.Unmarshaler
 	}
+	BBox       *BoundingBox
 	Properties PropertyList
 }
 
@@ -54,19 +55,23 @@ func (f *Feature) MarshalJSON() ([]byte, error) {
 	if len(f.Properties) > 0 {
 		feat = struct {
 			Type  string        `json:"type"`
+			BBox  *BoundingBox  `json:"bbox,omitempty"`
 			Geo   geo           `json:"geometry"`
 			Props *PropertyList `json:"properties"`
 		}{
 			Type:  FeatureType,
+			BBox:  f.BBox,
 			Geo:   geom,
 			Props: &f.Properties,
 		}
 	} else {
 		feat = struct {
-			Type string `json:"type"`
-			Geo  geo    `json:"geometry"`
+			Type string       `json:"type"`
+			BBox *BoundingBox `json:"bbox,omitempty"`
+			Geo  geo          `json:"geometry"`
 		}{
 			Type: FeatureType,
+			BBox: f.BBox,
 			Geo:  geom,
 		}
 	}
@@ -87,6 +92,13 @@ func (f *Feature) UnmarshalJSON(data []byte) error {
 		return errors.Wrap(err, "failed to unmarshal 'type'")
 	} else if typ != FeatureType {
 		return fmt.Errorf("type is '%s', expecting '%s'", typ, FeatureType)
+	}
+
+	if data, ok := objs["bbox"]; ok {
+		f.BBox = &BoundingBox{}
+		if err := json.Unmarshal(*data, f.BBox); err != nil {
+			return errors.Wrap(err, "failed to unmarshal 'bbox' (bounding box)")
+		}
 	}
 
 	if data, ok := objs["properties"]; ok {
@@ -124,6 +136,30 @@ func (f *Feature) UnmarshalJSON(data []byte) error {
 	}
 
 	return nil
+}
+
+// WithBoundingBox sets the optional bounding box.
+func (f *Feature) WithBoundingBox(bottomLeft, topRight Coordinates) *Feature {
+	f.BBox = &BoundingBox{
+		BottomLeft: bottomLeft,
+		TopRight:   topRight,
+	}
+	return f
+}
+
+// WithProperties sets the optional properties, removing all existing properties.
+func (f *Feature) WithProperties(props ...Property) *Feature {
+	f.Properties = PropertyList(props)
+	return f
+}
+
+// AddProperty appends a new property.
+func (f *Feature) AddProperty(name string, value interface{}) *Feature {
+	f.Properties = append(f.Properties, Property{
+		Name:  name,
+		Value: value,
+	})
+	return f
 }
 
 type feature struct {

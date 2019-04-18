@@ -10,10 +10,10 @@ import (
 )
 
 func TestMarshal(t *testing.T) {
-	data, err := json.Marshal(geojson.NewMultiPoint([]geojson.Coordinates{
+	data, err := json.Marshal(geojson.NewMultiPoint(
 		geojson.NewCoordinates(12, 34),
 		geojson.NewCoordinatesWithElevation(12, 34, 56),
-	}))
+	))
 	require.NoError(t, err)
 	require.JSONEq(t,
 		`{
@@ -43,8 +43,8 @@ func TestUnmarshal(t *testing.T) {
 			}
 		}`), &f)
 	require.NoError(t, err)
-	require.Equal(t, geojson.NewMultiPoint([]geojson.Coordinates{
+	require.Equal(t, geojson.NewMultiPoint(
 		geojson.NewCoordinates(12, 34),
 		geojson.NewCoordinatesWithElevation(12, 34, 56),
-	}), &f)
+	), &f)
 }
