@@ -9,12 +9,13 @@ import (
 	geojson "github.com/mercatormaps/go-geojson"
 )
 
-func TestMarshalFeatureCollection(t *testing.T) {
-	data, err := json.Marshal(geojson.NewFeatureCollection(
+func TestFeatureCollection(t *testing.T) {
+	collection := geojson.NewFeatureCollection(
 		geojson.NewPoint(9.189982, 45.4642035),
 		geojson.NewPoint(79.9288064, 13.0473748),
-	))
+	)
 
+	data, err := json.Marshal(collection)
 	require.NoError(t, err)
 	require.JSONEq(t, `
 		{
@@ -37,13 +38,31 @@ func TestMarshalFeatureCollection(t *testing.T) {
 			]
 		}`,
 		string(data))
+
+	unmarshalled := geojson.FeatureCollection{}
+	err = json.Unmarshal(data, &unmarshalled)
+	require.NoError(t, err)
+	require.Equal(t, collection, &unmarshalled)
 }
 
-func TestUnmarshalFeatureCollection(t *testing.T) {
-	coll := geojson.FeatureCollection{}
-	err := json.Unmarshal([]byte(`
+func TestFeatureCollectionWithBoundingBox(t *testing.T) {
+	collection := geojson.NewFeatureCollection(
+		geojson.NewPoint(9.189982, 45.4642035),
+		geojson.NewPoint(79.9288064, 13.0473748),
+	).WithBoundingBox(
+		geojson.NewCoordinates(7.1827768, 43.7032932),
+		geojson.NewCoordinates(11.2387051, 47.2856026),
+	)
+
+	data, err := json.Marshal(collection)
+	require.NoError(t, err)
+	require.JSONEq(t, `
 		{
 			"type": "FeatureCollection",
+			"bbox": [
+				7.1827768,  43.7032932,
+				11.2387051, 47.2856026
+			],
 			"features": [
 				{
 					"type": "Feature",
@@ -60,11 +79,11 @@ func TestUnmarshalFeatureCollection(t *testing.T) {
 					}
 				}
 			]
-		}`), &coll)
+		}`,
+		string(data))
 
+	unmarshalled := geojson.FeatureCollection{}
+	err = json.Unmarshal(data, &unmarshalled)
 	require.NoError(t, err)
-	require.Equal(t, geojson.NewFeatureCollection(
-		geojson.NewPoint(9.189982, 45.4642035),
-		geojson.NewPoint(79.9288064, 13.0473748),
-	), &coll)
+	require.Equal(t, collection, &unmarshalled)
 }

@@ -11,22 +11,29 @@ const (
 )
 
 // FeatureCollection is a list of Features.
-type FeatureCollection []Feature
+type FeatureCollection struct {
+	Features []Feature
+	BBox     *BoundingBox
+}
 
 // NewFeatureCollection returns a FeatureCollection consisting of the supplied Features.
 func NewFeatureCollection(features ...*Feature) *FeatureCollection {
-	coll := make(FeatureCollection, len(features))
-	for i, f := range features {
-		coll[i] = *f
+	c := FeatureCollection{
+		Features: make([]Feature, len(features)),
 	}
-	return &coll
+
+	for i, f := range features {
+		c.Features[i] = *f
+	}
+	return &c
 }
 
 // MarshalJSON returns the JSON encoding of the FeatureCollection.
 func (c *FeatureCollection) MarshalJSON() ([]byte, error) {
 	return json.Marshal(&collection{
 		Type:     FeatureCollectionType,
-		Features: *c,
+		BBox:     c.BBox,
+		Features: c.Features,
 	})
 }
 
@@ -41,11 +48,22 @@ func (c *FeatureCollection) UnmarshalJSON(data []byte) error {
 		return fmt.Errorf("type is '%s', expecting '%s'", col.Type, FeatureCollectionType)
 	}
 
-	*c = col.Features
+	c.BBox = col.BBox
+	c.Features = col.Features
 	return nil
 }
 
+// WithBoundingBox sets the optional bounding box.
+func (c *FeatureCollection) WithBoundingBox(bottomLeft, topRight Coordinates) *FeatureCollection {
+	c.BBox = &BoundingBox{
+		BottomLeft: bottomLeft,
+		TopRight:   topRight,
+	}
+	return c
+}
+
 type collection struct {
-	Type     string    `json:"type"`
-	Features []Feature `json:"features"`
+	Type     string       `json:"type"`
+	BBox     *BoundingBox `json:"bbox,omitempty"`
+	Features []Feature    `json:"features"`
 }
