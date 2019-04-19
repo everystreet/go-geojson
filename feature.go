@@ -42,11 +42,10 @@ func (f *Feature) MarshalJSON() ([]byte, error) {
 	switch g := f.Geometry.(type) {
 	case *Point:
 		geom.Type = PointType
-		geom.Coords = g
+		geom.Pos = g
 	case *MultiPoint:
-		fmt.Println("MultiPoint")
 		geom.Type = MultiPointType
-		geom.Coords = g
+		geom.Pos = g
 	default:
 		return nil, fmt.Errorf("unknown geometry type: %v", g)
 	}
@@ -108,8 +107,8 @@ func (f *Feature) UnmarshalJSON(data []byte) error {
 	}
 
 	geo := struct {
-		Type   string           `json:"type"`
-		Coords *json.RawMessage `json:"coordinates"`
+		Type string           `json:"type"`
+		Pos  *json.RawMessage `json:"coordinates"`
 	}{}
 
 	if data, ok := objs["geometry"]; !ok {
@@ -121,13 +120,13 @@ func (f *Feature) UnmarshalJSON(data []byte) error {
 	switch geo.Type {
 	case PointType:
 		p := Point{}
-		if err := json.Unmarshal(*geo.Coords, &p); err != nil {
+		if err := json.Unmarshal(*geo.Pos, &p); err != nil {
 			return errors.Wrap(err, "failed to unmarshal "+PointType)
 		}
 		f.Geometry = &p
 	case MultiPointType:
 		m := MultiPoint{}
-		if err := json.Unmarshal(*geo.Coords, &m); err != nil {
+		if err := json.Unmarshal(*geo.Pos, &m); err != nil {
 			return errors.Wrap(err, "failed to unmarshal "+MultiPointType)
 		}
 		f.Geometry = &m
@@ -139,7 +138,7 @@ func (f *Feature) UnmarshalJSON(data []byte) error {
 }
 
 // WithBoundingBox sets the optional bounding box.
-func (f *Feature) WithBoundingBox(bottomLeft, topRight Coordinates) *Feature {
+func (f *Feature) WithBoundingBox(bottomLeft, topRight Position) *Feature {
 	f.BBox = &BoundingBox{
 		BottomLeft: bottomLeft,
 		TopRight:   topRight,
@@ -169,8 +168,8 @@ type feature struct {
 }
 
 type geo struct {
-	Type   string `json:"type"`
-	Coords interface {
+	Type string `json:"type"`
+	Pos  interface {
 		json.Marshaler
 		json.Unmarshaler
 	} `json:"coordinates"`

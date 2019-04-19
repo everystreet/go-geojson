@@ -1,7 +1,7 @@
 package geojson
 
-// Point is a single set of Coordinates.
-type Point Coordinates
+// Point is a single set of Position.
+type Point Position
 
 // NewPoint returns a Point Feature with the specified longitude and latitude.
 func NewPoint(long, lat float64) *Feature {
@@ -26,10 +26,10 @@ func NewPointWithElevation(long, lat, elevation float64) *Feature {
 
 // MarshalJSON returns the JSON encoding of the Point.
 func (p *Point) MarshalJSON() ([]byte, error) {
-	return (*Coordinates)(p).MarshalJSON()
+	return (*Position)(p).MarshalJSON()
 }
 
 // UnmarshalJSON parses the JSON-encoded data and stores the result.
 func (p *Point) UnmarshalJSON(data []byte) error {
-	return (*Coordinates)(p).UnmarshalJSON(data)
+	return (*Position)(p).UnmarshalJSON(data)
 }

@@ -8,15 +8,15 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestMarshalCoordinates(t *testing.T) {
+func TestMarshalPosition(t *testing.T) {
 	tests := []struct {
 		name     string
-		coords   geojson.Coordinates
+		pos      geojson.Position
 		expected string
 	}{
 		{
 			"with elevation",
-			geojson.Coordinates{
+			geojson.Position{
 				Longitude: 9.189982,
 				Latitude:  45.4642035,
 				Elevation: geojson.NewOptionalFloat64(125),
@@ -25,7 +25,7 @@ func TestMarshalCoordinates(t *testing.T) {
 		},
 		{
 			"without elevation",
-			geojson.Coordinates{
+			geojson.Position{
 				Longitude: 9.189982,
 				Latitude:  45.4642035,
 			},
@@ -35,23 +35,23 @@ func TestMarshalCoordinates(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			data, err := json.Marshal(&tt.coords)
+			data, err := json.Marshal(&tt.pos)
 			require.NoError(t, err)
 			require.JSONEq(t, tt.expected, string(data))
 		})
 	}
 }
 
-func TestUnmarshalCoordinates(t *testing.T) {
+func TestUnmarshalPosition(t *testing.T) {
 	tests := []struct {
 		name     string
 		data     string
-		expected geojson.Coordinates
+		expected geojson.Position
 	}{
 		{
 			"with elevation",
 			"[9.189982,45.4642035,125]",
-			geojson.Coordinates{
+			geojson.Position{
 				Longitude: 9.189982,
 				Latitude:  45.4642035,
 				Elevation: geojson.NewOptionalFloat64(125),
@@ -60,7 +60,7 @@ func TestUnmarshalCoordinates(t *testing.T) {
 		{
 			"without elevation",
 			"[9.189982,45.4642035]",
-			geojson.Coordinates{
+			geojson.Position{
 				Longitude: 9.189982,
 				Latitude:  45.4642035,
 			},
@@ -69,10 +69,10 @@ func TestUnmarshalCoordinates(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			coords := geojson.Coordinates{}
-			err := json.Unmarshal([]byte(tt.data), &coords)
+			pos := geojson.Position{}
+			err := json.Unmarshal([]byte(tt.data), &pos)
 			require.NoError(t, err)
-			require.Equal(t, tt.expected, coords)
+			require.Equal(t, tt.expected, pos)
 		})
 	}
 }

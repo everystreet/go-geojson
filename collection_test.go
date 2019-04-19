@@ -50,8 +50,8 @@ func TestFeatureCollectionWithBoundingBox(t *testing.T) {
 		geojson.NewPoint(9.189982, 45.4642035),
 		geojson.NewPoint(79.9288064, 13.0473748),
 	).WithBoundingBox(
-		geojson.NewCoordinates(7.1827768, 43.7032932),
-		geojson.NewCoordinates(11.2387051, 47.2856026),
+		geojson.NewPosition(7.1827768, 43.7032932),
+		geojson.NewPosition(11.2387051, 47.2856026),
 	)
 
 	data, err := json.Marshal(collection)

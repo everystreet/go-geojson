@@ -33,8 +33,8 @@ func TestFeature(t *testing.T) {
 func TestFeatureWithBoundingBox(t *testing.T) {
 	feature := geojson.NewPoint(9.189982, 45.4642035).
 		WithBoundingBox(
-			geojson.NewCoordinates(7.1827768, 43.7032932),
-			geojson.NewCoordinates(11.2387051, 47.2856026),
+			geojson.NewPosition(7.1827768, 43.7032932),
+			geojson.NewPosition(11.2387051, 47.2856026),
 		)
 
 	data, err := json.Marshal(feature)

@@ -2,26 +2,24 @@ package geojson
 
 import (
 	"encoding/json"
-	"fmt"
 )
 
-// MultiPoint is a set of Coordinates.
-type MultiPoint []Coordinates
+// MultiPoint is a set of Position.
+type MultiPoint []Position
 
-// NewMultiPoint returns a MultiPoint from the specified set of coordinates.
-func NewMultiPoint(coords ...Coordinates) *Feature {
+// NewMultiPoint returns a MultiPoint from the specified set of position.
+func NewMultiPoint(pos ...Position) *Feature {
 	return &Feature{
-		Geometry: (*MultiPoint)(&coords),
+		Geometry: (*MultiPoint)(&pos),
 	}
 }
 
 // MarshalJSON returns the JSON encoding of the MultiPoint.
 func (m *MultiPoint) MarshalJSON() ([]byte, error) {
-	fmt.Println("marshal")
-	return json.Marshal([]Coordinates(*m))
+	return json.Marshal([]Position(*m))
 }
 
 // UnmarshalJSON parses the JSON-encoded data and stores the result.
 func (m *MultiPoint) UnmarshalJSON(data []byte) error {
-	return json.Unmarshal(data, (*[]Coordinates)(m))
+	return json.Unmarshal(data, (*[]Position)(m))
 }

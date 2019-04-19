@@ -6,63 +6,63 @@ import (
 	"strconv"
 )
 
-// Coordinates represents a longitude and latitude with optional elevation/altitude.
-type Coordinates struct {
+// Position represents a longitude and latitude with optional elevation/altitude.
+type Position struct {
 	Longitude float64
 	Latitude  float64
 	Elevation OptionalFloat64
 }
 
-// NewCoordinates from longitude and latitude.
-func NewCoordinates(long, lat float64) Coordinates {
-	return Coordinates{
+// NewPosition from longitude and latitude.
+func NewPosition(long, lat float64) Position {
+	return Position{
 		Longitude: long,
 		Latitude:  lat,
 	}
 }
 
-// NewCoordinatesWithElevation from longitude, latitude and elevation.
-func NewCoordinatesWithElevation(long, lat, elevation float64) Coordinates {
-	return Coordinates{
+// NewPositionWithElevation from longitude, latitude and elevation.
+func NewPositionWithElevation(long, lat, elevation float64) Position {
+	return Position{
 		Longitude: long,
 		Latitude:  lat,
 		Elevation: NewOptionalFloat64(elevation),
 	}
 }
 
-// MarshalJSON returns the JSON encoding of the Coordinates.
+// MarshalJSON returns the JSON encoding of the Position.
 // The JSON encoding is an array of numbers with the longitude followed by the latitude, and optional elevation.
-func (c *Coordinates) MarshalJSON() ([]byte, error) {
+func (c *Position) MarshalJSON() ([]byte, error) {
 	if c.Elevation.IsSet() {
-		return json.Marshal(&coordinates{
+		return json.Marshal(&position{
 			c.Longitude,
 			c.Latitude,
 			c.Elevation.Value(),
 		})
 	}
 
-	return json.Marshal(&coordinates{
+	return json.Marshal(&position{
 		c.Longitude,
 		c.Latitude,
 	})
 }
 
 // UnmarshalJSON parses the JSON-encoded data and stores the results.
-func (c *Coordinates) UnmarshalJSON(data []byte) error {
-	coords := coordinates{}
-	if err := json.Unmarshal(data, &coords); err != nil {
+func (c *Position) UnmarshalJSON(data []byte) error {
+	pos := position{}
+	if err := json.Unmarshal(data, &pos); err != nil {
 		return err
 	}
 
-	switch len(coords) {
+	switch len(pos) {
 	case 3:
-		c.Elevation = NewOptionalFloat64(coords[2])
+		c.Elevation = NewOptionalFloat64(pos[2])
 		fallthrough
 	case 2:
-		c.Longitude = coords[0]
-		c.Latitude = coords[1]
+		c.Longitude = pos[0]
+		c.Latitude = pos[1]
 	default:
-		return errors.New("invalid coordinates")
+		return errors.New("invalid position")
 	}
 	return nil
 }
@@ -102,4 +102,4 @@ func (o OptionalFloat64) String() string {
 	return "{unset}"
 }
 
-type coordinates []float64
+type position []float64

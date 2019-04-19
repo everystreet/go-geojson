@@ -8,19 +8,19 @@ import (
 
 // BoundingBox represents a bounding box in either 2D or 3D space.
 type BoundingBox struct {
-	BottomLeft Coordinates
-	TopRight   Coordinates
+	BottomLeft Position
+	TopRight   Position
 }
 
 // MarshalJSON returns the JSON encoding of the box.
-// It is an error if only 1 elevation value is set - either both coordinates or neither must have it.
+// It is an error if only 1 elevation value is set - either both positions or neither must have it.
 func (b *BoundingBox) MarshalJSON() ([]byte, error) {
 	if b.BottomLeft.Elevation.IsSet() || b.TopRight.Elevation.IsSet() {
 		if !b.BottomLeft.Elevation.IsSet() || !b.TopRight.Elevation.IsSet() {
-			return nil, fmt.Errorf("bounding box coordinates must be the same setting")
+			return nil, fmt.Errorf("bounding box positions must be in the same setting")
 		}
 
-		return json.Marshal(&coordinates{
+		return json.Marshal(&position{
 			b.BottomLeft.Longitude,
 			b.BottomLeft.Latitude,
 			b.BottomLeft.Elevation.Value(),
@@ -30,7 +30,7 @@ func (b *BoundingBox) MarshalJSON() ([]byte, error) {
 		})
 	}
 
-	return json.Marshal(&coordinates{
+	return json.Marshal(&position{
 		b.BottomLeft.Longitude,
 		b.BottomLeft.Latitude,
 		b.TopRight.Longitude,
@@ -40,20 +40,20 @@ func (b *BoundingBox) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON parses the JSON-encoded data and stores the results.
 func (b *BoundingBox) UnmarshalJSON(data []byte) error {
-	coords := coordinates{}
-	if err := json.Unmarshal(data, &coords); err != nil {
+	pos := position{}
+	if err := json.Unmarshal(data, &pos); err != nil {
 		return err
 	}
 
-	switch len(coords) {
+	switch len(pos) {
 	case 4:
-		b.BottomLeft = NewCoordinates(coords[0], coords[1])
-		b.TopRight = NewCoordinates(coords[2], coords[3])
+		b.BottomLeft = NewPosition(pos[0], pos[1])
+		b.TopRight = NewPosition(pos[2], pos[3])
 	case 6:
-		b.BottomLeft = NewCoordinatesWithElevation(coords[0], coords[1], coords[2])
-		b.TopRight = NewCoordinatesWithElevation(coords[3], coords[4], coords[5])
+		b.BottomLeft = NewPositionWithElevation(pos[0], pos[1], pos[2])
+		b.TopRight = NewPositionWithElevation(pos[3], pos[4], pos[5])
 	default:
-		return errors.New("invalid coordinates")
+		return errors.New("invalid position")
 	}
 	return nil
 }

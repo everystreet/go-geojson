@@ -54,7 +54,7 @@ func (c *FeatureCollection) UnmarshalJSON(data []byte) error {
 }
 
 // WithBoundingBox sets the optional bounding box.
-func (c *FeatureCollection) WithBoundingBox(bottomLeft, topRight Coordinates) *FeatureCollection {
+func (c *FeatureCollection) WithBoundingBox(bottomLeft, topRight Position) *FeatureCollection {
 	c.BBox = &BoundingBox{
 		BottomLeft: bottomLeft,
 		TopRight:   topRight,
