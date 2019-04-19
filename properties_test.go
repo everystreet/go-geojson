@@ -8,12 +8,13 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestMarshalPropertyList(t *testing.T) {
-	data, err := json.Marshal(&geojson.PropertyList{
+func TestPropertyList(t *testing.T) {
+	props := geojson.NewPropertyList(
 		geojson.StringProp("prop1", "val1"),
 		geojson.StringProp("prop2", "val2"),
-	})
+	)
 
+	data, err := json.Marshal(&props)
 	require.NoError(t, err)
 	require.JSONEq(t, `
 		{
@@ -21,20 +22,9 @@ func TestMarshalPropertyList(t *testing.T) {
 			"prop2": "val2"
 		}`,
 		string(data))
-}
 
-func TestUnmarshalPropertyList(t *testing.T) {
-	props := geojson.PropertyList{}
-	err := json.Unmarshal([]byte(`
-		{
-			"prop1": "val1",
-			"prop2": "val2"
-		}`),
-		&props)
-
+	unmarshalled := geojson.PropertyList{}
+	err = json.Unmarshal(data, &unmarshalled)
 	require.NoError(t, err)
-	require.ElementsMatch(t, geojson.PropertyList{
-		geojson.StringProp("prop1", "val1"),
-		geojson.StringProp("prop2", "val2"),
-	}, props)
+	require.Equal(t, &props, &unmarshalled)
 }

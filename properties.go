@@ -13,6 +13,11 @@ type Property struct {
 // PropertyList is a list of Properties.
 type PropertyList []Property
 
+// NewPropertyList creates a new PropertyList from the supplied Properties.
+func NewPropertyList(props ...Property) PropertyList {
+	return PropertyList(props)
+}
+
 // MarshalJSON returns the JSON encoding of the PropertyList.
 func (l *PropertyList) MarshalJSON() ([]byte, error) {
 	props := properties{}

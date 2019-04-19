@@ -9,14 +9,16 @@ import (
 	geojson "github.com/mercatormaps/go-geojson"
 )
 
-func TestMarshal(t *testing.T) {
-	data, err := json.Marshal(geojson.NewMultiPoint(
+func TestMultiPoint(t *testing.T) {
+	multipoint := geojson.NewMultiPoint(
 		geojson.NewPosition(12, 34),
 		geojson.NewPositionWithElevation(12, 34, 56),
-	))
+	)
+
+	data, err := json.Marshal(multipoint)
 	require.NoError(t, err)
-	require.JSONEq(t,
-		`{
+	require.JSONEq(t, `
+		{
 			"type": "Feature",
 			"geometry": {
 				"type": "MultiPoint",
@@ -27,24 +29,9 @@ func TestMarshal(t *testing.T) {
 			}
 		}`,
 		string(data))
-}
 
-func TestUnmarshal(t *testing.T) {
-	f := geojson.Feature{}
-	err := json.Unmarshal([]byte(
-		`{
-			"type": "Feature",
-			"geometry": {
-				"type": "MultiPoint",
-				"coordinates": [
-					[12, 34],
-					[12, 34, 56]
-				]
-			}
-		}`), &f)
+	unmarshalled := geojson.Feature{}
+	err = json.Unmarshal(data, &unmarshalled)
 	require.NoError(t, err)
-	require.Equal(t, geojson.NewMultiPoint(
-		geojson.NewPosition(12, 34),
-		geojson.NewPositionWithElevation(12, 34, 56),
-	), &f)
+	require.Equal(t, multipoint, &unmarshalled)
 }
