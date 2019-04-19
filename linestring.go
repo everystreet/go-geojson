@@ -17,20 +17,20 @@ func NewLineString(pos1, pos2 Position, others ...Position) *Feature {
 }
 
 // MarshalJSON returns the JSON encoding of the LineString.
-func (m *LineString) MarshalJSON() ([]byte, error) {
-	if len(*m) < 2 {
+func (l *LineString) MarshalJSON() ([]byte, error) {
+	if len(*l) < 2 {
 		return nil, errLineStringTooShort
 	}
-	return json.Marshal([]Position(*m))
+	return json.Marshal([]Position(*l))
 }
 
 // UnmarshalJSON parses the JSON-encoded data and stores the result.
-func (m *LineString) UnmarshalJSON(data []byte) error {
-	if err := json.Unmarshal(data, (*[]Position)(m)); err != nil {
+func (l *LineString) UnmarshalJSON(data []byte) error {
+	if err := json.Unmarshal(data, (*[]Position)(l)); err != nil {
 		return err
 	}
 
-	if len(*m) < 2 {
+	if len(*l) < 2 {
 		return errLineStringTooShort
 	}
 	return nil
