@@ -3,6 +3,7 @@ package geojson
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"strconv"
 )
 
@@ -32,23 +33,23 @@ func NewPositionWithElevation(long, lat, elevation float64) Position {
 
 // MarshalJSON returns the JSON encoding of the Position.
 // The JSON encoding is an array of numbers with the longitude followed by the latitude, and optional elevation.
-func (c *Position) MarshalJSON() ([]byte, error) {
-	if c.Elevation.IsSet() {
+func (p *Position) MarshalJSON() ([]byte, error) {
+	if p.Elevation.IsSet() {
 		return json.Marshal(&position{
-			c.Longitude,
-			c.Latitude,
-			c.Elevation.Value(),
+			p.Longitude,
+			p.Latitude,
+			p.Elevation.Value(),
 		})
 	}
 
 	return json.Marshal(&position{
-		c.Longitude,
-		c.Latitude,
+		p.Longitude,
+		p.Latitude,
 	})
 }
 
 // UnmarshalJSON parses the JSON-encoded data and stores the results.
-func (c *Position) UnmarshalJSON(data []byte) error {
+func (p *Position) UnmarshalJSON(data []byte) error {
 	pos := position{}
 	if err := json.Unmarshal(data, &pos); err != nil {
 		return err
@@ -56,15 +57,22 @@ func (c *Position) UnmarshalJSON(data []byte) error {
 
 	switch len(pos) {
 	case 3:
-		c.Elevation = NewOptionalFloat64(pos[2])
+		p.Elevation = NewOptionalFloat64(pos[2])
 		fallthrough
 	case 2:
-		c.Longitude = pos[0]
-		c.Latitude = pos[1]
+		p.Longitude = pos[0]
+		p.Latitude = pos[1]
 	default:
 		return errors.New("invalid position")
 	}
 	return nil
+}
+
+func (p Position) String() string {
+	if p.Elevation.IsSet() {
+		return fmt.Sprintf("[%G, %G, %G]", p.Longitude, p.Latitude, p.Elevation.Value())
+	}
+	return fmt.Sprintf("[%G, %G]", p.Longitude, p.Latitude)
 }
 
 // OptionalFloat64 is a type that represents a float64 that can be optionally set.
