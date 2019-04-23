@@ -9,19 +9,17 @@ import (
 )
 
 func TestMultiLineString(t *testing.T) {
-	mls := geojson.Feature{
-		Geometry: &geojson.MultiLineString{
-			{
-				geojson.NewPosition(12, 34),
-				geojson.NewPosition(56, 78),
-				geojson.NewPosition(90, 12),
-			},
-			{
-				geojson.NewPosition(23, 45),
-				geojson.NewPosition(67, 89),
-			},
+	mls := geojson.NewMultiLineString(
+		[]geojson.Position{
+			geojson.NewPosition(12, 34),
+			geojson.NewPosition(56, 78),
+			geojson.NewPosition(90, 12),
 		},
-	}
+		[]geojson.Position{
+			geojson.NewPosition(23, 45),
+			geojson.NewPosition(67, 89),
+		},
+	)
 
 	data, err := json.Marshal(&mls)
 	require.NoError(t, err)
@@ -48,5 +46,5 @@ func TestMultiLineString(t *testing.T) {
 	unmarshalled := geojson.Feature{}
 	err = json.Unmarshal(data, &unmarshalled)
 	require.NoError(t, err)
-	require.Equal(t, &mls, &unmarshalled)
+	require.Equal(t, mls, &unmarshalled)
 }
