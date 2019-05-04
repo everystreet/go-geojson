@@ -55,12 +55,16 @@ data, _ := json.Marshal(linestring)
 * Feature
   * Geometry
     * ~~Point~~
-    * ~~MultiPoint~~
-    * ~~LineString~~
-    * ~~MultiLineString~~
-    * Polygon
       * Validation
-    * MultiPolygon
+    * ~~MultiPoint~~
+      * Validation
+    * ~~LineString~~
+      * Validation
+    * ~~MultiLineString~~
+      * Validation
+    * ~~Polygon~~
+      * Validation
+    * ~~MultiPolygon~~
       * Validation
     * GeometryCollection
   * ~~Properties~~
