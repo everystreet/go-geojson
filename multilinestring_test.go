@@ -48,3 +48,29 @@ func TestMultiLineString(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, mls, &unmarshalled)
 }
+
+func TestMultiLineStringTooShort(t *testing.T) {
+	t.Run("marshal", func(t *testing.T) {
+		_, err := json.Marshal(geojson.NewMultiLineString(
+			[]geojson.Position{
+				geojson.NewPosition(12, 34),
+			}))
+		require.Error(t, err)
+	})
+
+	t.Run("unmarshal", func(t *testing.T) {
+		err := json.Unmarshal([]byte(`
+		{
+			"type": "Feature",
+			"geometry": {
+				"type": "MultiLineString",
+				"coordinates": [
+					[
+						[12, 34]
+					]
+				]
+			}
+		}`), &geojson.Feature{})
+		require.Error(t, err)
+	})
+}
