@@ -10,8 +10,8 @@ import (
 
 func TestPropertyList(t *testing.T) {
 	props := geojson.NewPropertyList(
-		geojson.StringProp("prop1", "val1"),
-		geojson.StringProp("prop2", "val2"),
+		geojson.Property{Name: "prop1", Value: "val1"},
+		geojson.Property{Name: "prop2", Value: "val2"},
 	)
 
 	data, err := json.Marshal(&props)
@@ -26,5 +26,8 @@ func TestPropertyList(t *testing.T) {
 	unmarshalled := geojson.PropertyList{}
 	err = json.Unmarshal(data, &unmarshalled)
 	require.NoError(t, err)
-	require.Equal(t, &props, &unmarshalled)
+
+	require.Len(t, unmarshalled, 2)
+	require.Contains(t, unmarshalled, props[0])
+	require.Contains(t, unmarshalled, props[1])
 }
