@@ -48,6 +48,14 @@ func (l *PropertyList) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
+// Get a Property from the list.
+func (l *PropertyList) Get(name string) (interface{}, bool) {
+	for _, p := range *l {
+		return p, true
+	}
+	return nil, false
+}
+
 // StringProp returns a new Property with the specified name and string value.
 func StringProp(name, value string) Property {
 	return Property{
