@@ -31,3 +31,20 @@ func TestPropertyList(t *testing.T) {
 	require.Contains(t, unmarshalled, props[0])
 	require.Contains(t, unmarshalled, props[1])
 }
+
+func TestPropertyListGetType(t *testing.T) {
+	props := geojson.NewPropertyList(
+		geojson.Property{Name: "string_prop", Value: "hello"},
+		geojson.Property{Name: "int_prop", Value: 4},
+	)
+
+	var strProp string
+	err := props.GetType("string_prop", &strProp)
+	require.NoError(t, err)
+	require.Equal(t, "hello", strProp)
+
+	var intProp int
+	err = props.GetType("int_prop", &intProp)
+	require.NoError(t, err)
+	require.Equal(t, 4, intProp)
+}

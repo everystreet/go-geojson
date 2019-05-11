@@ -2,6 +2,8 @@ package geojson
 
 import (
 	"encoding/json"
+	"fmt"
+	"reflect"
 )
 
 // Property represents a single property of arbitrary type.
@@ -51,9 +53,26 @@ func (l *PropertyList) UnmarshalJSON(data []byte) error {
 // Get a Property from the list.
 func (l *PropertyList) Get(name string) (interface{}, bool) {
 	for _, p := range *l {
-		return p, true
+		if p.Name == name {
+			return p, true
+		}
 	}
 	return nil, false
+}
+
+// GetType assigns a named property to dest if the types are equal.
+func (l *PropertyList) GetType(name string, dest interface{}) error {
+	if reflect.TypeOf(dest).Kind() != reflect.Ptr {
+		return fmt.Errorf("dest must be pointer")
+	}
+
+	for _, p := range *l {
+		if p.Name == name {
+			reflect.ValueOf(dest).Elem().Set(reflect.ValueOf(p.Value))
+			return nil
+		}
+	}
+	return fmt.Errorf("property '%s' doesn't exist", name)
 }
 
 type properties map[string]interface{}
