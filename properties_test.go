@@ -33,18 +33,35 @@ func TestPropertyList(t *testing.T) {
 }
 
 func TestPropertyListGetType(t *testing.T) {
-	props := geojson.NewPropertyList(
-		geojson.Property{Name: "string_prop", Value: "hello"},
-		geojson.Property{Name: "int_prop", Value: 4},
-	)
+	t.Run("string property", func(t *testing.T) {
+		props := geojson.NewPropertyList(
+			geojson.Property{Name: "string_prop", Value: "hello"},
+		)
 
-	var strProp string
-	err := props.GetType("string_prop", &strProp)
-	require.NoError(t, err)
-	require.Equal(t, "hello", strProp)
+		var prop string
+		err := props.GetType("string_prop", &prop)
+		require.NoError(t, err)
+		require.Equal(t, "hello", prop)
+	})
 
-	var intProp int
-	err = props.GetType("int_prop", &intProp)
-	require.NoError(t, err)
-	require.Equal(t, 4, intProp)
+	t.Run("integer property", func(t *testing.T) {
+		props := geojson.NewPropertyList(
+			geojson.Property{Name: "int_prop", Value: 4},
+		)
+
+		var prop int
+		err := props.GetType("int_prop", &prop)
+		require.NoError(t, err)
+		require.Equal(t, 4, prop)
+	})
+
+	t.Run("incorrect type", func(t *testing.T) {
+		props := geojson.NewPropertyList(
+			geojson.Property{Name: "float_prop", Value: 4.5},
+		)
+
+		var prop int
+		err := props.GetType("float_prop", &prop)
+		require.Error(t, err)
+	})
 }

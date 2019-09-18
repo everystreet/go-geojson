@@ -68,8 +68,16 @@ func (l *PropertyList) GetType(name string, dest interface{}) error {
 
 	for _, p := range *l {
 		if p.Name == name {
-			reflect.ValueOf(dest).Elem().Set(reflect.ValueOf(p.Value))
-			return nil
+			var err error
+			func() {
+				defer func() {
+					if r := recover(); r != nil {
+						err = fmt.Errorf("type error: %v", r)
+					}
+				}()
+				reflect.ValueOf(dest).Elem().Set(reflect.ValueOf(p.Value))
+			}()
+			return err
 		}
 	}
 	return fmt.Errorf("property '%s' doesn't exist", name)
