@@ -51,10 +51,10 @@ func (l *PropertyList) UnmarshalJSON(data []byte) error {
 }
 
 // Get a Property from the list.
-func (l *PropertyList) Get(name string) (interface{}, bool) {
+func (l *PropertyList) Get(name string) (*Property, bool) {
 	for _, p := range *l {
 		if p.Name == name {
-			return p, true
+			return &p, true
 		}
 	}
 	return nil, false
