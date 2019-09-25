@@ -72,7 +72,7 @@ func (l *PropertyList) GetType(name string, dest interface{}) error {
 			func() {
 				defer func() {
 					if r := recover(); r != nil {
-						err = fmt.Errorf("type error: %v", r)
+						err = fmt.Errorf("type error for property '%s': %v", name, r)
 					}
 				}()
 				reflect.ValueOf(dest).Elem().Set(reflect.ValueOf(p.Value))
