@@ -14,6 +14,11 @@ func NewMultiPoint(pos ...Position) *Feature {
 	}
 }
 
+// Type returns the geometry type.
+func (*MultiPoint) Type() GeometryType {
+	return MultiPointGeometryType
+}
+
 // MarshalJSON returns the JSON encoding of the MultiPoint.
 func (m *MultiPoint) MarshalJSON() ([]byte, error) {
 	return json.Marshal([]Position(*m))

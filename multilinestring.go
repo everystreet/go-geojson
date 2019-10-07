@@ -12,6 +12,11 @@ func NewMultiLineString(ls ...[]Position) *Feature {
 	}
 }
 
+// Type returns the geometry type.
+func (*MultiLineString) Type() GeometryType {
+	return MultiLineStringGeometryType
+}
+
 // MarshalJSON returns the JSON encoding of the MultiLineString.
 func (m *MultiLineString) MarshalJSON() ([]byte, error) {
 	if err := m.validate(); err != nil {

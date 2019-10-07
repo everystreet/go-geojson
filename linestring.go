@@ -16,6 +16,11 @@ func NewLineString(pos1, pos2 Position, others ...Position) *Feature {
 	}
 }
 
+// Type returns the geometry type.
+func (*LineString) Type() GeometryType {
+	return LineStringGeometryType
+}
+
 // MarshalJSON returns the JSON encoding of the LineString.
 func (l *LineString) MarshalJSON() ([]byte, error) {
 	if err := l.validate(); err != nil {

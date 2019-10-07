@@ -5,10 +5,8 @@ import (
 	"fmt"
 )
 
-const (
-	// FeatureCollectionType string.
-	FeatureCollectionType = "FeatureCollection"
-)
+// TypePropFeatureCollection is the value of the "type" property for Feature Collections.
+const TypePropFeatureCollection = "FeatureCollection"
 
 // FeatureCollection is a list of Features.
 type FeatureCollection struct {
@@ -31,7 +29,7 @@ func NewFeatureCollection(features ...*Feature) *FeatureCollection {
 // MarshalJSON returns the JSON encoding of the FeatureCollection.
 func (c *FeatureCollection) MarshalJSON() ([]byte, error) {
 	return json.Marshal(&collection{
-		Type:     FeatureCollectionType,
+		Type:     TypePropFeatureCollection,
 		BBox:     c.BBox,
 		Features: c.Features,
 	})
@@ -44,8 +42,8 @@ func (c *FeatureCollection) UnmarshalJSON(data []byte) error {
 		return err
 	}
 
-	if col.Type != FeatureCollectionType {
-		return fmt.Errorf("type is '%s', expecting '%s'", col.Type, FeatureCollectionType)
+	if col.Type != TypePropFeatureCollection {
+		return fmt.Errorf("type is '%s', expecting '%s'", col.Type, TypePropFeatureCollection)
 	}
 
 	c.BBox = col.BBox

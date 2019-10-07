@@ -7,59 +7,41 @@ import (
 	"github.com/pkg/errors"
 )
 
-const (
-	// FeatureType string.
-	FeatureType = "Feature"
+// TypePropFeature is the value of the "type" property for Features.
+const TypePropFeature = "Feature"
 
-	// PointType string.
-	PointType = "Point"
-	// MultiPointType string.
-	MultiPointType = "MultiPoint"
-	// LineStringType string.
-	LineStringType = "LineString"
-	// MultiLineStringType string.
-	MultiLineStringType = "MultiLineString"
-	// PolygonType string.
-	PolygonType = "Polygon"
-	// MultiPolygonType string.
-	MultiPolygonType = "MultiPolygon"
+// GeometryType is a supported geometry type.
+type GeometryType string
+
+// Types of geometry.
+const (
+	PointGeometryType           GeometryType = "Point"
+	MultiPointGeometryType      GeometryType = "MultiPoint"
+	LineStringGeometryType      GeometryType = "LineString"
+	MultiLineStringGeometryType GeometryType = "MultiLineString"
+	PolygonGeometryType         GeometryType = "Polygon"
+	MultiPolygonGeometryType    GeometryType = "MultiPolygon"
 )
 
 // Feature consists of a specific geometry type and a list of properties.
 type Feature struct {
-	Geometry interface {
-		json.Marshaler
-		json.Unmarshaler
-	}
+	Geometry   Geometry
 	BBox       *BoundingBox
 	Properties PropertyList
 }
 
+// Geometry contains the points represented by a particular geometry type.
+type Geometry interface {
+	Type() GeometryType
+	json.Marshaler
+	json.Unmarshaler
+}
+
 // MarshalJSON returns the JSON encoding of the Feature.
 func (f *Feature) MarshalJSON() ([]byte, error) {
-	var geom geo
-
-	switch g := f.Geometry.(type) {
-	case *Point:
-		geom.Type = PointType
-		geom.Pos = g
-	case *MultiPoint:
-		geom.Type = MultiPointType
-		geom.Pos = g
-	case *LineString:
-		geom.Type = LineStringType
-		geom.Pos = g
-	case *MultiLineString:
-		geom.Type = MultiLineStringType
-		geom.Pos = g
-	case *Polygon:
-		geom.Type = PolygonType
-		geom.Pos = g
-	case *MultiPolygon:
-		geom.Type = MultiPolygonType
-		geom.Pos = g
-	default:
-		return nil, fmt.Errorf("unknown geometry type: %v", g)
+	geom := geo{
+		Type: f.Geometry.Type(),
+		Pos:  f.Geometry,
 	}
 
 	var feat interface{}
@@ -70,7 +52,7 @@ func (f *Feature) MarshalJSON() ([]byte, error) {
 			Geo   geo           `json:"geometry"`
 			Props *PropertyList `json:"properties"`
 		}{
-			Type:  FeatureType,
+			Type:  TypePropFeature,
 			BBox:  f.BBox,
 			Geo:   geom,
 			Props: &f.Properties,
@@ -81,7 +63,7 @@ func (f *Feature) MarshalJSON() ([]byte, error) {
 			BBox *BoundingBox `json:"bbox,omitempty"`
 			Geo  geo          `json:"geometry"`
 		}{
-			Type: FeatureType,
+			Type: TypePropFeature,
 			BBox: f.BBox,
 			Geo:  geom,
 		}
@@ -101,8 +83,8 @@ func (f *Feature) UnmarshalJSON(data []byte) error {
 		return errors.New("missing 'type'")
 	} else if err := json.Unmarshal(*data, &typ); err != nil {
 		return errors.Wrap(err, "failed to unmarshal 'type'")
-	} else if typ != FeatureType {
-		return fmt.Errorf("type is '%s', expecting '%s'", typ, FeatureType)
+	} else if typ != TypePropFeature {
+		return fmt.Errorf("type is '%s', expecting '%s'", typ, TypePropFeature)
 	}
 
 	if data, ok := objs["bbox"]; ok {
@@ -119,7 +101,7 @@ func (f *Feature) UnmarshalJSON(data []byte) error {
 	}
 
 	geo := struct {
-		Type string           `json:"type"`
+		Type GeometryType     `json:"type"`
 		Pos  *json.RawMessage `json:"coordinates"`
 	}{}
 
@@ -130,44 +112,44 @@ func (f *Feature) UnmarshalJSON(data []byte) error {
 	}
 
 	switch geo.Type {
-	case PointType:
+	case PointGeometryType:
 		p := Point{}
 		if err := json.Unmarshal(*geo.Pos, &p); err != nil {
-			return errors.Wrap(err, "failed to unmarshal "+PointType)
+			return errors.Wrapf(err, "failed to unmarshal %s", PointGeometryType)
 		}
 		f.Geometry = &p
-	case MultiPointType:
+	case MultiPointGeometryType:
 		m := MultiPoint{}
 		if err := json.Unmarshal(*geo.Pos, &m); err != nil {
-			return errors.Wrap(err, "failed to unmarshal "+MultiPointType)
+			return errors.Wrapf(err, "failed to unmarshal %s", MultiPointGeometryType)
 		}
 		f.Geometry = &m
-	case LineStringType:
+	case LineStringGeometryType:
 		l := LineString{}
 		if err := json.Unmarshal(*geo.Pos, &l); err != nil {
-			return errors.Wrap(err, "failed to unmarshal "+LineStringType)
+			return errors.Wrapf(err, "failed to unmarshal %s", LineStringGeometryType)
 		}
 		f.Geometry = &l
-	case MultiLineStringType:
+	case MultiLineStringGeometryType:
 		m := MultiLineString{}
 		if err := json.Unmarshal(*geo.Pos, &m); err != nil {
-			return errors.Wrap(err, "failed to unmarshal "+MultiLineStringType)
+			return errors.Wrapf(err, "failed to unmarshal %s", MultiLineStringGeometryType)
 		}
 		f.Geometry = &m
-	case PolygonType:
+	case PolygonGeometryType:
 		p := Polygon{}
 		if err := json.Unmarshal(*geo.Pos, &p); err != nil {
-			return errors.Wrap(err, "failed to unmarshal "+PolygonType)
+			return errors.Wrapf(err, "failed to unmarshal %s", PolygonGeometryType)
 		}
 		f.Geometry = &p
-	case MultiPolygonType:
+	case MultiPolygonGeometryType:
 		m := MultiPolygon{}
 		if err := json.Unmarshal(*geo.Pos, &m); err != nil {
-			return errors.Wrap(err, "failed to unmarshal "+MultiPolygonType)
+			return errors.Wrapf(err, "failed to unmarshal %s", MultiPolygonGeometryType)
 		}
 		f.Geometry = &m
 	default:
-		return errors.New("unknown geometry type " + geo.Type)
+		return fmt.Errorf("unknown geometry type %s", geo.Type)
 	}
 
 	return nil
@@ -204,7 +186,7 @@ type feature struct {
 }
 
 type geo struct {
-	Type string `json:"type"`
+	Type GeometryType `json:"type"`
 	Pos  interface {
 		json.Marshaler
 		json.Unmarshaler

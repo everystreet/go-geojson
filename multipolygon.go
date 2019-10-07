@@ -12,6 +12,11 @@ func NewMultiPolygon(p ...[][]Position) *Feature {
 	}
 }
 
+// Type returns the geometry type.
+func (*MultiPolygon) Type() GeometryType {
+	return MultiPolygonGeometryType
+}
+
 // MarshalJSON returns the JSON encoding of the MultiPolygon.
 func (m *MultiPolygon) MarshalJSON() ([]byte, error) {
 	if err := m.validate(); err != nil {

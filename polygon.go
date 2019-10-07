@@ -15,6 +15,11 @@ func NewPolygon(rings ...[]Position) *Feature {
 	}
 }
 
+// Type returns the geometry type.
+func (*Polygon) Type() GeometryType {
+	return PolygonGeometryType
+}
+
 // MarshalJSON returns the JSON encoding of the Polygon.
 func (p *Polygon) MarshalJSON() ([]byte, error) {
 	if err := p.validate(); err != nil {
