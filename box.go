@@ -2,7 +2,6 @@ package geojson
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 )
 
@@ -53,7 +52,7 @@ func (b *BoundingBox) UnmarshalJSON(data []byte) error {
 		b.BottomLeft = NewPositionWithElevation(pos[0], pos[1], pos[2])
 		b.TopRight = NewPositionWithElevation(pos[3], pos[4], pos[5])
 	default:
-		return errors.New("invalid position")
+		return fmt.Errorf("invalid position")
 	}
 	return nil
 }

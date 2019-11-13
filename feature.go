@@ -3,8 +3,6 @@ package geojson
 import (
 	"encoding/json"
 	"fmt"
-
-	"github.com/pkg/errors"
 )
 
 // TypePropFeature is the value of the "type" property for Features.
@@ -80,9 +78,9 @@ func (f *Feature) UnmarshalJSON(data []byte) error {
 
 	var typ string
 	if data, ok := objs["type"]; !ok {
-		return errors.New("missing 'type'")
+		return fmt.Errorf("missing 'type'")
 	} else if err := json.Unmarshal(*data, &typ); err != nil {
-		return errors.Wrap(err, "failed to unmarshal 'type'")
+		return fmt.Errorf("failed to unmarshal 'type': %w", err)
 	} else if typ != TypePropFeature {
 		return fmt.Errorf("type is '%s', expecting '%s'", typ, TypePropFeature)
 	}
@@ -90,13 +88,13 @@ func (f *Feature) UnmarshalJSON(data []byte) error {
 	if data, ok := objs["bbox"]; ok {
 		f.BBox = &BoundingBox{}
 		if err := json.Unmarshal(*data, f.BBox); err != nil {
-			return errors.Wrap(err, "failed to unmarshal 'bbox' (bounding box)")
+			return fmt.Errorf("failed to unmarshal 'bbox' (bounding box): %w", err)
 		}
 	}
 
 	if data, ok := objs["properties"]; ok {
 		if err := json.Unmarshal(*data, &f.Properties); err != nil {
-			return errors.Wrap(err, "failed to unmarshal 'properties'")
+			return fmt.Errorf("failed to unmarshal 'properties': %w", err)
 		}
 	}
 
@@ -106,46 +104,46 @@ func (f *Feature) UnmarshalJSON(data []byte) error {
 	}{}
 
 	if data, ok := objs["geometry"]; !ok {
-		return errors.New("missing 'geometry'")
+		return fmt.Errorf("missing 'geometry'")
 	} else if err := json.Unmarshal(*data, &geo); err != nil {
-		return errors.Wrap(err, "failed to unmarshal 'geometry'")
+		return fmt.Errorf("failed to unmarshal 'geometry': %w", err)
 	}
 
 	switch geo.Type {
 	case PointGeometryType:
 		p := Point{}
 		if err := json.Unmarshal(*geo.Pos, &p); err != nil {
-			return errors.Wrapf(err, "failed to unmarshal %s", PointGeometryType)
+			return fmt.Errorf("failed to unmarshal %s: %w", PointGeometryType, err)
 		}
 		f.Geometry = &p
 	case MultiPointGeometryType:
 		m := MultiPoint{}
 		if err := json.Unmarshal(*geo.Pos, &m); err != nil {
-			return errors.Wrapf(err, "failed to unmarshal %s", MultiPointGeometryType)
+			return fmt.Errorf("failed to unmarshal %s: %w", MultiPointGeometryType, err)
 		}
 		f.Geometry = &m
 	case LineStringGeometryType:
 		l := LineString{}
 		if err := json.Unmarshal(*geo.Pos, &l); err != nil {
-			return errors.Wrapf(err, "failed to unmarshal %s", LineStringGeometryType)
+			return fmt.Errorf("failed to unmarshal %s: %w", LineStringGeometryType, err)
 		}
 		f.Geometry = &l
 	case MultiLineStringGeometryType:
 		m := MultiLineString{}
 		if err := json.Unmarshal(*geo.Pos, &m); err != nil {
-			return errors.Wrapf(err, "failed to unmarshal %s", MultiLineStringGeometryType)
+			return fmt.Errorf("failed to unmarshal %s: %w", MultiLineStringGeometryType, err)
 		}
 		f.Geometry = &m
 	case PolygonGeometryType:
 		p := Polygon{}
 		if err := json.Unmarshal(*geo.Pos, &p); err != nil {
-			return errors.Wrapf(err, "failed to unmarshal %s", PolygonGeometryType)
+			return fmt.Errorf("failed to unmarshal %s: %w", PolygonGeometryType, err)
 		}
 		f.Geometry = &p
 	case MultiPolygonGeometryType:
 		m := MultiPolygon{}
 		if err := json.Unmarshal(*geo.Pos, &m); err != nil {
-			return errors.Wrapf(err, "failed to unmarshal %s", MultiPolygonGeometryType)
+			return fmt.Errorf("failed to unmarshal %s: %w", MultiPolygonGeometryType, err)
 		}
 		f.Geometry = &m
 	default:

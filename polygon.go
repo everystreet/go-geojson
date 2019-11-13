@@ -2,7 +2,7 @@ package geojson
 
 import (
 	"encoding/json"
-	"errors"
+	"fmt"
 )
 
 // Polygon is a set of linear rings (closed LineStrings).
@@ -45,4 +45,4 @@ func (p *Polygon) validate() error {
 	return nil
 }
 
-var errLinearRingTooShort = errors.New("Polygon ring must contain at least 4 positions")
+var errLinearRingTooShort = fmt.Errorf("Polygon ring must contain at least 4 positions")

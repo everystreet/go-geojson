@@ -2,7 +2,6 @@ package geojson
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"strconv"
 )
@@ -63,7 +62,7 @@ func (p *Position) UnmarshalJSON(data []byte) error {
 		p.Longitude = pos[0]
 		p.Latitude = pos[1]
 	default:
-		return errors.New("invalid position")
+		return fmt.Errorf("invalid position")
 	}
 	return nil
 }

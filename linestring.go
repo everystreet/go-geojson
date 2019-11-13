@@ -2,7 +2,7 @@ package geojson
 
 import (
 	"encoding/json"
-	"errors"
+	"fmt"
 )
 
 // LineString is a set of two or more Positions.
@@ -44,4 +44,4 @@ func (l *LineString) validate() error {
 	return nil
 }
 
-var errLineStringTooShort = errors.New("LineString must contain at least 2 positions")
+var errLineStringTooShort = fmt.Errorf("LineString must contain at least 2 positions")
