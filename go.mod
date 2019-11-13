@@ -1,4 +1,4 @@
-module github.com/mercatormaps/go-geojson
+module github.com/everystreet/go-geojson
 
 go 1.13
 

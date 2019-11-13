@@ -3,7 +3,7 @@ package geojson_test
 import (
 	"testing"
 
-	geojson "github.com/mercatormaps/go-geojson"
+	geojson "github.com/everystreet/go-geojson"
 	"github.com/stretchr/testify/require"
 )
 

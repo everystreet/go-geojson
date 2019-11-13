@@ -1,6 +1,8 @@
 package geojson
 
-import "encoding/json"
+import (
+	"encoding/json"
+)
 
 // MultiPolygon is a set of Polygons.
 type MultiPolygon [][][]Position

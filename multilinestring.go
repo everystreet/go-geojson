@@ -1,6 +1,8 @@
 package geojson
 
-import "encoding/json"
+import (
+	"encoding/json"
+)
 
 // MultiLineString is a set of LineStrings.
 type MultiLineString [][]Position

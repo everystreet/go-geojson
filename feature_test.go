@@ -4,9 +4,8 @@ import (
 	"encoding/json"
 	"testing"
 
+	geojson "github.com/everystreet/go-geojson"
 	"github.com/stretchr/testify/require"
-
-	geojson "github.com/mercatormaps/go-geojson"
 )
 
 func TestFeature(t *testing.T) {
