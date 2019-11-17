@@ -34,6 +34,9 @@ func TestMultiPolygon(t *testing.T) {
 		},
 	)
 
+	err := m.Geometry.Validate()
+	require.NoError(t, err)
+
 	data, err := json.Marshal(&m)
 	require.NoError(t, err)
 	require.JSONEq(t, `
@@ -76,35 +79,13 @@ func TestMultiPolygon(t *testing.T) {
 }
 
 func TestMultiPolygonTooShort(t *testing.T) {
-	t.Run("marshal", func(t *testing.T) {
-		_, err := json.Marshal(geojson.NewMultiPolygon(
-			[][]geojson.Position{
-				{
-					geojson.NewPosition(12, 34),
-					geojson.NewPosition(56, 78),
-					geojson.NewPosition(12, 34),
-				},
-			}))
-		require.Error(t, err)
-	})
-
-	t.Run("unmarshal", func(t *testing.T) {
-		err := json.Unmarshal([]byte(`
-		{
-			"type": "Feature",
-			"geometry": {
-				"type": "MultiPolygon",
-				"coordinates": [
-					[
-						[
-							[12, 34],
-							[56, 78],
-							[12, 34]
-						]
-					]
-				]
-			}
-		}`), &geojson.Feature{})
-		require.Error(t, err)
-	})
+	err := geojson.NewMultiPolygon(
+		[][]geojson.Position{
+			{
+				geojson.NewPosition(12, 34),
+				geojson.NewPosition(56, 78),
+				geojson.NewPosition(12, 34),
+			},
+		}).Geometry.Validate()
+	require.Error(t, err)
 }

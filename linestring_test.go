@@ -15,6 +15,9 @@ func TestLineString(t *testing.T) {
 		geojson.NewPosition(90, 12),
 	)
 
+	err := linestring.Geometry.Validate()
+	require.NoError(t, err)
+
 	data, err := json.Marshal(linestring)
 	require.NoError(t, err)
 	require.JSONEq(t, `
@@ -38,24 +41,8 @@ func TestLineString(t *testing.T) {
 }
 
 func TestLineStringTooShort(t *testing.T) {
-	t.Run("marshal", func(t *testing.T) {
-		_, err := json.Marshal(&geojson.LineString{
-			geojson.NewPosition(12, 34),
-		})
-		require.Error(t, err)
-	})
-
-	t.Run("unmarshal", func(t *testing.T) {
-		err := json.Unmarshal([]byte(`
-			{
-				"type": "Feature",
-				"geometry": {
-					"type": "LineString",
-					"coordinates": [
-						[12, 34]
-					]
-				}
-			}`), &geojson.Feature{})
-		require.Error(t, err)
-	})
+	err := geojson.LineString{
+		geojson.NewPosition(12, 34),
+	}.Validate()
+	require.Error(t, err)
 }

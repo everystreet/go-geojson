@@ -25,6 +25,9 @@ func TestPolygon(t *testing.T) {
 		},
 	)
 
+	err := p.Geometry.Validate()
+	require.NoError(t, err)
+
 	data, err := json.Marshal(&p)
 	require.NoError(t, err)
 	require.JSONEq(t, `
@@ -58,31 +61,11 @@ func TestPolygon(t *testing.T) {
 }
 
 func TestPolygonTooShort(t *testing.T) {
-	t.Run("marshal", func(t *testing.T) {
-		_, err := json.Marshal(geojson.NewPolygon(
-			[]geojson.Position{
-				geojson.NewPosition(12, 34),
-				geojson.NewPosition(56, 78),
-				geojson.NewPosition(12, 34),
-			}))
-		require.Error(t, err)
-	})
-
-	t.Run("unmarshal", func(t *testing.T) {
-		err := json.Unmarshal([]byte(`
-		{
-			"type": "Feature",
-			"geometry": {
-				"type": "Polygon",
-				"coordinates": [
-					[
-						[12, 34],
-						[56, 78],
-						[12, 34]
-					]
-				]
-			}
-		}`), &geojson.Feature{})
-		require.Error(t, err)
-	})
+	err := geojson.NewPolygon(
+		[]geojson.Position{
+			geojson.NewPosition(12, 34),
+			geojson.NewPosition(56, 78),
+			geojson.NewPosition(12, 34),
+		}).Geometry.Validate()
+	require.Error(t, err)
 }

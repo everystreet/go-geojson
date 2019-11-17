@@ -17,31 +17,26 @@ func NewLineString(pos1, pos2 Position, others ...Position) *Feature {
 }
 
 // Type returns the geometry type.
-func (*LineString) Type() GeometryType {
+func (l LineString) Type() GeometryType {
 	return LineStringGeometryType
 }
 
-// MarshalJSON returns the JSON encoding of the LineString.
-func (l *LineString) MarshalJSON() ([]byte, error) {
-	if err := l.validate(); err != nil {
-		return nil, err
+// Validate the LineString.
+func (l LineString) Validate() error {
+	if len(l) < 2 {
+		return errLineStringTooShort
 	}
-	return json.Marshal([]Position(*l))
+	return nil
+}
+
+// MarshalJSON returns the JSON encoding of the LineString.
+func (l LineString) MarshalJSON() ([]byte, error) {
+	return json.Marshal([]Position(l))
 }
 
 // UnmarshalJSON parses the JSON-encoded data and stores the result.
 func (l *LineString) UnmarshalJSON(data []byte) error {
-	if err := json.Unmarshal(data, (*[]Position)(l)); err != nil {
-		return err
-	}
-	return l.validate()
-}
-
-func (l *LineString) validate() error {
-	if len(*l) < 2 {
-		return errLineStringTooShort
-	}
-	return nil
+	return json.Unmarshal(data, (*[]Position)(l))
 }
 
 var errLineStringTooShort = fmt.Errorf("LineString must contain at least 2 positions")

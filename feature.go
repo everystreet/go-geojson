@@ -30,9 +30,10 @@ type Feature struct {
 
 // Geometry contains the points represented by a particular geometry type.
 type Geometry interface {
-	Type() GeometryType
 	json.Marshaler
 	json.Unmarshaler
+	Type() GeometryType
+	Validate() error
 }
 
 // MarshalJSON returns the JSON encoding of the Feature.

@@ -14,6 +14,9 @@ func TestMultiPoint(t *testing.T) {
 		geojson.NewPositionWithElevation(12, 34, 56),
 	)
 
+	err := multipoint.Geometry.Validate()
+	require.NoError(t, err)
+
 	data, err := json.Marshal(multipoint)
 	require.NoError(t, err)
 	require.JSONEq(t, `

@@ -13,11 +13,6 @@ func NewPoint(long, lat float64) *Feature {
 	}
 }
 
-// Type returns the geometry type.
-func (*Point) Type() GeometryType {
-	return PointGeometryType
-}
-
 // NewPointWithElevation returns a Point Feature with the specified longitude, latitude and elevation.
 func NewPointWithElevation(long, lat, elevation float64) *Feature {
 	return &Feature{
@@ -29,9 +24,19 @@ func NewPointWithElevation(long, lat, elevation float64) *Feature {
 	}
 }
 
+// Type returns the geometry type.
+func (p Point) Type() GeometryType {
+	return PointGeometryType
+}
+
+// Validate the Point.
+func (p Point) Validate() error {
+	return nil
+}
+
 // MarshalJSON returns the JSON encoding of the Point.
-func (p *Point) MarshalJSON() ([]byte, error) {
-	return (*Position)(p).MarshalJSON()
+func (p Point) MarshalJSON() ([]byte, error) {
+	return (*Position)(&p).MarshalJSON()
 }
 
 // UnmarshalJSON parses the JSON-encoded data and stores the result.

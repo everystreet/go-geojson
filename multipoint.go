@@ -15,13 +15,18 @@ func NewMultiPoint(pos ...Position) *Feature {
 }
 
 // Type returns the geometry type.
-func (*MultiPoint) Type() GeometryType {
+func (m MultiPoint) Type() GeometryType {
 	return MultiPointGeometryType
 }
 
+// Validate the MultiPoint.
+func (m MultiPoint) Validate() error {
+	return nil
+}
+
 // MarshalJSON returns the JSON encoding of the MultiPoint.
-func (m *MultiPoint) MarshalJSON() ([]byte, error) {
-	return json.Marshal([]Position(*m))
+func (m MultiPoint) MarshalJSON() ([]byte, error) {
+	return json.Marshal([]Position(m))
 }
 
 // UnmarshalJSON parses the JSON-encoded data and stores the result.

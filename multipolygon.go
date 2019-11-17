@@ -19,24 +19,9 @@ func (*MultiPolygon) Type() GeometryType {
 	return MultiPolygonGeometryType
 }
 
-// MarshalJSON returns the JSON encoding of the MultiPolygon.
-func (m *MultiPolygon) MarshalJSON() ([]byte, error) {
-	if err := m.validate(); err != nil {
-		return nil, err
-	}
-	return json.Marshal([][][]Position(*m))
-}
-
-// UnmarshalJSON parses the JSON-encoded data and stores the result.
-func (m *MultiPolygon) UnmarshalJSON(data []byte) error {
-	if err := json.Unmarshal(data, (*[][][]Position)(m)); err != nil {
-		return err
-	}
-	return m.validate()
-}
-
-func (m *MultiPolygon) validate() error {
-	for _, p := range *m {
+// Validate the MultiPolygon.
+func (m MultiPolygon) Validate() error {
+	for _, p := range m {
 		for _, r := range p {
 			if len(r) < 4 {
 				return errLinearRingTooShort
@@ -44,4 +29,14 @@ func (m *MultiPolygon) validate() error {
 		}
 	}
 	return nil
+}
+
+// MarshalJSON returns the JSON encoding of the MultiPolygon.
+func (m MultiPolygon) MarshalJSON() ([]byte, error) {
+	return json.Marshal([][][]Position(m))
+}
+
+// UnmarshalJSON parses the JSON-encoded data and stores the result.
+func (m *MultiPolygon) UnmarshalJSON(data []byte) error {
+	return json.Unmarshal(data, (*[][][]Position)(m))
 }

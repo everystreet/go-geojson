@@ -11,6 +11,9 @@ import (
 func TestPoint(t *testing.T) {
 	point := geojson.NewPoint(9.189982, 45.4642035)
 
+	err := point.Geometry.Validate()
+	require.NoError(t, err)
+
 	data, err := json.Marshal(point)
 	require.NoError(t, err)
 	require.JSONEq(t, `
