@@ -22,9 +22,18 @@ func (p Polygon) Type() GeometryType {
 
 // Validate the Polygon.
 func (p Polygon) Validate() error {
-	for _, r := range p {
-		if len(r) < 4 {
+	for i, ring := range p {
+		if len(ring) < 4 {
 			return errLinearRingTooShort
+		} else if ring[len(ring)-1] != ring[0] {
+			return errLinearRingNotClosed
+		}
+
+		angle := loopToS2(ring).TurningAngle()
+		if i == 0 && angle >= 0 { // CCW
+			return fmt.Errorf("exterior ring must be clockwise but angle is %f", angle)
+		} else if i > 0 && angle <= 0 { // CW
+			return fmt.Errorf("interior ring must be counter-clockwise but angle is %f", angle)
 		}
 	}
 	return nil
@@ -40,4 +49,7 @@ func (p *Polygon) UnmarshalJSON(data []byte) error {
 	return json.Unmarshal(data, (*[][]Position)(p))
 }
 
-var errLinearRingTooShort = fmt.Errorf("Polygon ring must contain at least 4 positions")
+var (
+	errLinearRingTooShort  = fmt.Errorf("Polygon ring is too short - must contain at least 4 positions")
+	errLinearRingNotClosed = fmt.Errorf("Polygon ring must be closed")
+)

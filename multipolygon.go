@@ -21,11 +21,9 @@ func (*MultiPolygon) Type() GeometryType {
 
 // Validate the MultiPolygon.
 func (m MultiPolygon) Validate() error {
-	for _, p := range m {
-		for _, r := range p {
-			if len(r) < 4 {
-				return errLinearRingTooShort
-			}
+	for _, polygon := range m {
+		if err := Polygon(polygon).Validate(); err != nil {
+			return err
 		}
 	}
 	return nil

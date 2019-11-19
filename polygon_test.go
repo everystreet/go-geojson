@@ -11,17 +11,19 @@ import (
 func TestPolygon(t *testing.T) {
 	p := geojson.NewPolygon(
 		[]geojson.Position{
-			geojson.NewPosition(12, 34),
-			geojson.NewPosition(56, 78),
-			geojson.NewPosition(90, 12),
-			geojson.NewPosition(34, 56),
-			geojson.NewPosition(12, 34),
+			geojson.NewPosition(7, 7),
+			geojson.NewPosition(8, 4),
+			geojson.NewPosition(4, 3),
+			geojson.NewPosition(2, 5),
+			geojson.NewPosition(3, 7),
+			geojson.NewPosition(7, 7),
 		},
 		[]geojson.Position{
-			geojson.NewPosition(12, 34),
-			geojson.NewPosition(56, 78),
-			geojson.NewPosition(90, 12),
-			geojson.NewPosition(12, 34),
+			geojson.NewPosition(4, 4),
+			geojson.NewPosition(6, 4),
+			geojson.NewPosition(7, 5),
+			geojson.NewPosition(4, 6),
+			geojson.NewPosition(4, 4),
 		},
 	)
 
@@ -37,17 +39,19 @@ func TestPolygon(t *testing.T) {
 				"type": "Polygon",
 				"coordinates": [
 					[
-						[12, 34],
-						[56, 78],
-						[90, 12],
-						[34, 56],
-						[12, 34]
+						[7, 7],
+						[8, 4],
+						[4, 3],
+						[2, 5],
+						[3, 7],
+						[7, 7]
 					],
 					[
-						[12, 34],
-						[56, 78],
-						[90, 12],
-						[12, 34]
+						[4, 4],
+						[6, 4],
+						[7, 5],
+						[4, 6],
+						[4, 4]
 					]
 				]
 			}
@@ -58,14 +62,4 @@ func TestPolygon(t *testing.T) {
 	err = json.Unmarshal(data, &unmarshalled)
 	require.NoError(t, err)
 	require.Equal(t, p, &unmarshalled)
-}
-
-func TestPolygonTooShort(t *testing.T) {
-	err := geojson.NewPolygon(
-		[]geojson.Position{
-			geojson.NewPosition(12, 34),
-			geojson.NewPosition(56, 78),
-			geojson.NewPosition(12, 34),
-		}).Geometry.Validate()
-	require.Error(t, err)
 }
