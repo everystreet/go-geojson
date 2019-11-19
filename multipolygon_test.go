@@ -9,7 +9,7 @@ import (
 )
 
 func TestMultiPolygon(t *testing.T) {
-	m := geojson.NewMultiPolygon(
+	polygons := geojson.NewMultiPolygon(
 		[][]geojson.Position{
 			{
 				geojson.NewPosition(7, 7),
@@ -37,10 +37,10 @@ func TestMultiPolygon(t *testing.T) {
 		},
 	)
 
-	err := m.Geometry.Validate()
+	err := polygons.Geometry.Validate()
 	require.NoError(t, err)
 
-	data, err := json.Marshal(&m)
+	data, err := json.Marshal(&polygons)
 	require.NoError(t, err)
 	require.JSONEq(t, `
 		{
@@ -81,7 +81,7 @@ func TestMultiPolygon(t *testing.T) {
 	unmarshalled := geojson.Feature{}
 	err = json.Unmarshal(data, &unmarshalled)
 	require.NoError(t, err)
-	require.Equal(t, m, &unmarshalled)
+	require.Equal(t, polygons, &unmarshalled)
 }
 
 func TestMultiPolygonErrors(t *testing.T) {

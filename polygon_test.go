@@ -9,7 +9,7 @@ import (
 )
 
 func TestPolygon(t *testing.T) {
-	p := geojson.NewPolygon(
+	polygon := geojson.NewPolygon(
 		[]geojson.Position{
 			geojson.NewPosition(7, 7),
 			geojson.NewPosition(8, 4),
@@ -27,10 +27,10 @@ func TestPolygon(t *testing.T) {
 		},
 	)
 
-	err := p.Geometry.Validate()
+	err := polygon.Geometry.Validate()
 	require.NoError(t, err)
 
-	data, err := json.Marshal(&p)
+	data, err := json.Marshal(&polygon)
 	require.NoError(t, err)
 	require.JSONEq(t, `
 		{
@@ -61,5 +61,5 @@ func TestPolygon(t *testing.T) {
 	unmarshalled := geojson.Feature{}
 	err = json.Unmarshal(data, &unmarshalled)
 	require.NoError(t, err)
-	require.Equal(t, p, &unmarshalled)
+	require.Equal(t, polygon, &unmarshalled)
 }

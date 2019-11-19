@@ -9,7 +9,7 @@ import (
 )
 
 func TestMultiLineString(t *testing.T) {
-	mls := geojson.NewMultiLineString(
+	linestrings := geojson.NewMultiLineString(
 		[]geojson.Position{
 			geojson.NewPosition(12, 34),
 			geojson.NewPosition(56, 78),
@@ -21,10 +21,10 @@ func TestMultiLineString(t *testing.T) {
 		},
 	)
 
-	err := mls.Geometry.Validate()
+	err := linestrings.Geometry.Validate()
 	require.NoError(t, err)
 
-	data, err := json.Marshal(&mls)
+	data, err := json.Marshal(&linestrings)
 	require.NoError(t, err)
 	require.JSONEq(t, `
 		{
@@ -49,7 +49,7 @@ func TestMultiLineString(t *testing.T) {
 	unmarshalled := geojson.Feature{}
 	err = json.Unmarshal(data, &unmarshalled)
 	require.NoError(t, err)
-	require.Equal(t, mls, &unmarshalled)
+	require.Equal(t, linestrings, &unmarshalled)
 }
 
 func TestMultiLineStringTooShort(t *testing.T) {
