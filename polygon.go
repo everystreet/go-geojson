@@ -29,7 +29,7 @@ func (p Polygon) Validate() error {
 			return errLinearRingNotClosed
 		}
 
-		angle := loopToS2(ring).TurningAngle()
+		angle := LoopToS2(ring).TurningAngle()
 		if i == 0 && angle >= 0 { // CCW
 			return fmt.Errorf("exterior ring must be clockwise but angle is %f", angle)
 		} else if i > 0 && angle <= 0 { // CW
