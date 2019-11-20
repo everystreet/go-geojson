@@ -2,6 +2,8 @@
 
 `go-geojson` is a Go package for working with the GeoJSON format, as standardized by [RFC 7946](https://tools.ietf.org/html/rfc7946).
 
+This package supports marshalling and unmarshalling of all geometry types: `Point`, `MultiPoint`, `LineString`, `MultiLineString`, `Polygon`, `MultiPolygon` and `GeometryCollection`.
+
 ## Usage
 
 `go-geojson` implements the `json.Marshaler` and `json.Unmarshaler` interfaces. This means you can work with GeoJSON in the same way as you would with "regular" JSON.
@@ -11,7 +13,7 @@
 The example below demonstrates how to unmarshal a GeoJSON Feature. Once unmarshalled into a `geojson.Feature`, you have access to the bounding box and properties, and the Geometry object. As the Geometry can be one of several types, a type switch can be used to determine the type and work with it.
 
 ```go
-feature := geojson.Feature{}
+var feature geojson.Feature
 
 _ = json.Unmarshal(`
     {
@@ -50,24 +52,3 @@ linestring := geojson.NewLineString(
 
 data, _ := json.Marshal(linestring)
 ```
-## Feature progress
-
-* Feature
-  * Geometry
-    * ~~Point~~
-      * Validation
-    * ~~MultiPoint~~
-      * Validation
-    * ~~LineString~~
-      * Validation
-    * ~~MultiLineString~~
-      * Validation
-    * ~~Polygon~~
-      * Validation
-    * ~~MultiPolygon~~
-      * Validation
-    * GeometryCollection
-  * ~~Properties~~
-  * ~~Bounding box~~
-* ~~FeatureCollection~~
-  * ~~Bounding box~~
