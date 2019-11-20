@@ -24,7 +24,7 @@ func PolygonToS2(polygon Polygon) (*s2.Polygon, error) {
 
 	loops := make([]*s2.Loop, len(polygon))
 	for i, loop := range polygon {
-		loops[i] = loopToS2(loop)
+		loops[i] = LoopToS2(loop)
 		if err := loops[i].Validate(); err != nil {
 			return nil, fmt.Errorf("invalid loop '%d': %w", i, err)
 		}
@@ -33,7 +33,8 @@ func PolygonToS2(polygon Polygon) (*s2.Polygon, error) {
 	return p, p.Validate()
 }
 
-func loopToS2(loop []Position) *s2.Loop {
+// LoopToS2 returns an S2 Loop.
+func LoopToS2(loop []Position) *s2.Loop {
 	if n := len(loop); n == 0 {
 		return s2.EmptyLoop()
 	} else if n == 1 {
