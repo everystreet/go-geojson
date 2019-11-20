@@ -5,63 +5,110 @@ import (
 	"fmt"
 )
 
-// TypePropFeatureCollection is the value of the "type" property for Feature Collections.
-const TypePropFeatureCollection = "FeatureCollection"
+// GeometryType is a supported geometry type.
+type GeometryType string
 
-// FeatureCollection is a list of Features.
-type FeatureCollection struct {
-	Features []Feature
-	BBox     *BoundingBox
+// Types of geometry.
+const (
+	PointGeometryType           GeometryType = "Point"
+	MultiPointGeometryType      GeometryType = "MultiPoint"
+	LineStringGeometryType      GeometryType = "LineString"
+	MultiLineStringGeometryType GeometryType = "MultiLineString"
+	PolygonGeometryType         GeometryType = "Polygon"
+	MultiPolygonGeometryType    GeometryType = "MultiPolygon"
+	GeometryCollectionType      GeometryType = "GeometryCollection"
+)
+
+// GeometryCollection is a heterogeneous collection of Geometry objects.
+type GeometryCollection []Geometry
+
+// NewGeometryCollection returns a GeometryCollection Feature.
+func NewGeometryCollection(geos ...Geometry) *Feature {
+	return &Feature{
+		Geometry: (*GeometryCollection)(&geos),
+	}
 }
 
-// NewFeatureCollection returns a FeatureCollection consisting of the supplied Features.
-func NewFeatureCollection(features ...*Feature) *FeatureCollection {
-	c := FeatureCollection{
-		Features: make([]Feature, len(features)),
-	}
-
-	for i, f := range features {
-		c.Features[i] = *f
-	}
-	return &c
+// Type returns the geometry type.
+func (c GeometryCollection) Type() GeometryType {
+	return GeometryCollectionType
 }
 
-// MarshalJSON returns the JSON encoding of the FeatureCollection.
-func (c *FeatureCollection) MarshalJSON() ([]byte, error) {
-	return json.Marshal(&collection{
-		Type:     TypePropFeatureCollection,
-		BBox:     c.BBox,
-		Features: c.Features,
+// Validate the GeometryCollection.
+func (c GeometryCollection) Validate() error {
+	return nil
+}
+
+// MarshalJSON returns the JSON encoding of the GeometryCollection.
+func (c GeometryCollection) MarshalJSON() ([]byte, error) {
+	return json.Marshal(geometryCollection{
+		Type:       GeometryCollectionType,
+		Geometries: c,
 	})
 }
 
 // UnmarshalJSON parses the JSON-encoded data and stores the result.
-func (c *FeatureCollection) UnmarshalJSON(data []byte) error {
-	col := collection{}
-	if err := json.Unmarshal(data, &col); err != nil {
+func (c *GeometryCollection) UnmarshalJSON(data []byte) error {
+	var collection struct {
+		Geometries []json.RawMessage `json:"geometries"`
+	}
+
+	if err := json.Unmarshal(data, &collection); err != nil {
 		return err
 	}
 
-	if col.Type != TypePropFeatureCollection {
-		return fmt.Errorf("type is '%s', expecting '%s'", col.Type, TypePropFeatureCollection)
+	*c = make(GeometryCollection, len(collection.Geometries))
+	for i, data := range collection.Geometries {
+		geo, err := unmarshalGeometry(data)
+		if err != nil {
+			return err
+		}
+		(*c)[i] = geo
 	}
-
-	c.BBox = col.BBox
-	c.Features = col.Features
 	return nil
 }
 
-// WithBoundingBox sets the optional bounding box.
-func (c *FeatureCollection) WithBoundingBox(bottomLeft, topRight Position) *FeatureCollection {
-	c.BBox = &BoundingBox{
-		BottomLeft: bottomLeft,
-		TopRight:   topRight,
+func unmarshalGeometry(data json.RawMessage) (Geometry, error) {
+	var typ struct {
+		Type GeometryType `json:"type"`
 	}
-	return c
+
+	if err := json.Unmarshal(data, &typ); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal geometry: %w", err)
+	}
+
+	var geo Geometry
+	switch typ.Type {
+	case PointGeometryType:
+		geo = &Point{}
+	case MultiPointGeometryType:
+		geo = &MultiPoint{}
+	case LineStringGeometryType:
+		geo = &LineString{}
+	case MultiLineStringGeometryType:
+		geo = &MultiLineString{}
+	case PolygonGeometryType:
+		geo = &Polygon{}
+	case MultiPolygonGeometryType:
+		geo = &MultiPolygon{}
+	case GeometryCollectionType:
+		geo = &GeometryCollection{}
+	default:
+		return nil, fmt.Errorf("unknown geometry type '%v'", typ.Type)
+	}
+
+	if err := json.Unmarshal(data, geo); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal geometry '%v': %w", typ.Type, err)
+	}
+	return geo, nil
 }
 
-type collection struct {
-	Type     string       `json:"type"`
-	BBox     *BoundingBox `json:"bbox,omitempty"`
-	Features []Feature    `json:"features"`
+type geometry struct {
+	Type        GeometryType `json:"type"`
+	Coordinates interface{}  `json:"coordinates"`
+}
+
+type geometryCollection struct {
+	Type       GeometryType `json:"type"`
+	Geometries []Geometry   `json:"geometries"`
 }

@@ -13,7 +13,7 @@ type BoundingBox struct {
 
 // MarshalJSON returns the JSON encoding of the box.
 // It is an error if only 1 elevation value is set - either both positions or neither must have it.
-func (b *BoundingBox) MarshalJSON() ([]byte, error) {
+func (b BoundingBox) MarshalJSON() ([]byte, error) {
 	if b.BottomLeft.Elevation.IsSet() || b.TopRight.Elevation.IsSet() {
 		if !b.BottomLeft.Elevation.IsSet() || !b.TopRight.Elevation.IsSet() {
 			return nil, fmt.Errorf("bounding box positions must be in the same setting")

@@ -1,5 +1,9 @@
 package geojson
 
+import (
+	"encoding/json"
+)
+
 // Point is a single set of Position.
 type Point Position
 
@@ -36,10 +40,64 @@ func (p Point) Validate() error {
 
 // MarshalJSON returns the JSON encoding of the Point.
 func (p Point) MarshalJSON() ([]byte, error) {
-	return (*Position)(&p).MarshalJSON()
+	return json.Marshal(geometry{
+		Type:        PointGeometryType,
+		Coordinates: Position(p),
+	})
 }
 
 // UnmarshalJSON parses the JSON-encoded data and stores the result.
 func (p *Point) UnmarshalJSON(data []byte) error {
-	return (*Position)(p).UnmarshalJSON(data)
+	var geo struct {
+		Coordinates Position `json:"coordinates"`
+	}
+
+	if err := json.Unmarshal(data, &geo); err != nil {
+		return err
+	}
+
+	*p = Point(geo.Coordinates)
+	return nil
+}
+
+// MultiPoint is a set of Position.
+type MultiPoint []Position
+
+// NewMultiPoint returns a MultiPoint from the specified set of position.
+func NewMultiPoint(pos ...Position) *Feature {
+	return &Feature{
+		Geometry: (*MultiPoint)(&pos),
+	}
+}
+
+// Type returns the geometry type.
+func (m MultiPoint) Type() GeometryType {
+	return MultiPointGeometryType
+}
+
+// Validate the MultiPoint.
+func (m MultiPoint) Validate() error {
+	return nil
+}
+
+// MarshalJSON returns the JSON encoding of the MultiPoint.
+func (m MultiPoint) MarshalJSON() ([]byte, error) {
+	return json.Marshal(geometry{
+		Type:        MultiPointGeometryType,
+		Coordinates: []Position(m),
+	})
+}
+
+// UnmarshalJSON parses the JSON-encoded data and stores the result.
+func (m *MultiPoint) UnmarshalJSON(data []byte) error {
+	var geo struct {
+		Coordinates []Position `json:"coordinates"`
+	}
+
+	if err := json.Unmarshal(data, &geo); err != nil {
+		return err
+	}
+
+	*m = MultiPoint(geo.Coordinates)
+	return nil
 }

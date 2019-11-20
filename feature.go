@@ -5,20 +5,10 @@ import (
 	"fmt"
 )
 
-// TypePropFeature is the value of the "type" property for Features.
-const TypePropFeature = "Feature"
-
-// GeometryType is a supported geometry type.
-type GeometryType string
-
-// Types of geometry.
+// "type" properties.
 const (
-	PointGeometryType           GeometryType = "Point"
-	MultiPointGeometryType      GeometryType = "MultiPoint"
-	LineStringGeometryType      GeometryType = "LineString"
-	MultiLineStringGeometryType GeometryType = "MultiLineString"
-	PolygonGeometryType         GeometryType = "Polygon"
-	MultiPolygonGeometryType    GeometryType = "MultiPolygon"
+	TypePropFeature           = "Feature"
+	TypePropFeatureCollection = "FeatureCollection"
 )
 
 // Feature consists of a specific geometry type and a list of properties.
@@ -37,120 +27,43 @@ type Geometry interface {
 }
 
 // MarshalJSON returns the JSON encoding of the Feature.
-func (f *Feature) MarshalJSON() ([]byte, error) {
-	geom := geo{
-		Type: f.Geometry.Type(),
-		Pos:  f.Geometry,
-	}
-
-	var feat interface{}
-	if len(f.Properties) > 0 {
-		feat = struct {
-			Type  string        `json:"type"`
-			BBox  *BoundingBox  `json:"bbox,omitempty"`
-			Geo   geo           `json:"geometry"`
-			Props *PropertyList `json:"properties"`
-		}{
-			Type:  TypePropFeature,
-			BBox:  f.BBox,
-			Geo:   geom,
-			Props: &f.Properties,
-		}
-	} else {
-		feat = struct {
-			Type string       `json:"type"`
-			BBox *BoundingBox `json:"bbox,omitempty"`
-			Geo  geo          `json:"geometry"`
-		}{
-			Type: TypePropFeature,
-			BBox: f.BBox,
-			Geo:  geom,
-		}
-	}
-	return json.Marshal(&feat)
+func (f Feature) MarshalJSON() ([]byte, error) {
+	return json.Marshal(struct {
+		Type       string       `json:"type"`
+		BBox       *BoundingBox `json:"bbox,omitempty"`
+		Geometry   Geometry     `json:"geometry"`
+		Properties PropertyList `json:"properties,omitempty"`
+	}{
+		Type:       TypePropFeature,
+		BBox:       f.BBox,
+		Geometry:   f.Geometry,
+		Properties: f.Properties,
+	})
 }
 
 // UnmarshalJSON parses the JSON-encoded data and stores the result.
 func (f *Feature) UnmarshalJSON(data []byte) error {
-	var objs map[string]*json.RawMessage
-	if err := json.Unmarshal(data, &objs); err != nil {
+	var feature struct {
+		Type       string          `json:"type"`
+		BBox       *BoundingBox    `json:"bbox,omitempty"`
+		Geometry   json.RawMessage `json:"geometry"`
+		Properties PropertyList    `json:"properties,omitempty"`
+	}
+
+	if err := json.Unmarshal(data, &feature); err != nil {
+		return err
+	} else if feature.Type != TypePropFeature {
+		return fmt.Errorf("type is '%s', expecting '%s'", feature.Type, TypePropFeature)
+	}
+
+	f.BBox = feature.BBox
+	f.Properties = feature.Properties
+
+	geo, err := unmarshalGeometry(feature.Geometry)
+	if err != nil {
 		return err
 	}
-
-	var typ string
-	if data, ok := objs["type"]; !ok {
-		return fmt.Errorf("missing 'type'")
-	} else if err := json.Unmarshal(*data, &typ); err != nil {
-		return fmt.Errorf("failed to unmarshal 'type': %w", err)
-	} else if typ != TypePropFeature {
-		return fmt.Errorf("type is '%s', expecting '%s'", typ, TypePropFeature)
-	}
-
-	if data, ok := objs["bbox"]; ok {
-		f.BBox = &BoundingBox{}
-		if err := json.Unmarshal(*data, f.BBox); err != nil {
-			return fmt.Errorf("failed to unmarshal 'bbox' (bounding box): %w", err)
-		}
-	}
-
-	if data, ok := objs["properties"]; ok {
-		if err := json.Unmarshal(*data, &f.Properties); err != nil {
-			return fmt.Errorf("failed to unmarshal 'properties': %w", err)
-		}
-	}
-
-	geo := struct {
-		Type GeometryType     `json:"type"`
-		Pos  *json.RawMessage `json:"coordinates"`
-	}{}
-
-	if data, ok := objs["geometry"]; !ok {
-		return fmt.Errorf("missing 'geometry'")
-	} else if err := json.Unmarshal(*data, &geo); err != nil {
-		return fmt.Errorf("failed to unmarshal 'geometry': %w", err)
-	}
-
-	switch geo.Type {
-	case PointGeometryType:
-		p := Point{}
-		if err := json.Unmarshal(*geo.Pos, &p); err != nil {
-			return fmt.Errorf("failed to unmarshal %s: %w", PointGeometryType, err)
-		}
-		f.Geometry = &p
-	case MultiPointGeometryType:
-		m := MultiPoint{}
-		if err := json.Unmarshal(*geo.Pos, &m); err != nil {
-			return fmt.Errorf("failed to unmarshal %s: %w", MultiPointGeometryType, err)
-		}
-		f.Geometry = &m
-	case LineStringGeometryType:
-		l := LineString{}
-		if err := json.Unmarshal(*geo.Pos, &l); err != nil {
-			return fmt.Errorf("failed to unmarshal %s: %w", LineStringGeometryType, err)
-		}
-		f.Geometry = &l
-	case MultiLineStringGeometryType:
-		m := MultiLineString{}
-		if err := json.Unmarshal(*geo.Pos, &m); err != nil {
-			return fmt.Errorf("failed to unmarshal %s: %w", MultiLineStringGeometryType, err)
-		}
-		f.Geometry = &m
-	case PolygonGeometryType:
-		p := Polygon{}
-		if err := json.Unmarshal(*geo.Pos, &p); err != nil {
-			return fmt.Errorf("failed to unmarshal %s: %w", PolygonGeometryType, err)
-		}
-		f.Geometry = &p
-	case MultiPolygonGeometryType:
-		m := MultiPolygon{}
-		if err := json.Unmarshal(*geo.Pos, &m); err != nil {
-			return fmt.Errorf("failed to unmarshal %s: %w", MultiPolygonGeometryType, err)
-		}
-		f.Geometry = &m
-	default:
-		return fmt.Errorf("unknown geometry type %s", geo.Type)
-	}
-
+	f.Geometry = geo
 	return nil
 }
 
@@ -178,16 +91,60 @@ func (f *Feature) AddProperty(name string, value interface{}) *Feature {
 	return f
 }
 
-type feature struct {
-	Type  string       `json:"type"`
-	Geo   geo          `json:"geometry"`
-	Props PropertyList `json:"properties"`
+// FeatureCollection is a list of Features.
+type FeatureCollection struct {
+	Features []Feature
+	BBox     *BoundingBox
 }
 
-type geo struct {
-	Type GeometryType `json:"type"`
-	Pos  interface {
-		json.Marshaler
-		json.Unmarshaler
-	} `json:"coordinates"`
+// NewFeatureCollection returns a FeatureCollection consisting of the supplied Features.
+func NewFeatureCollection(features ...*Feature) *FeatureCollection {
+	c := FeatureCollection{
+		Features: make([]Feature, len(features)),
+	}
+
+	for i, f := range features {
+		c.Features[i] = *f
+	}
+	return &c
+}
+
+// MarshalJSON returns the JSON encoding of the FeatureCollection.
+func (c FeatureCollection) MarshalJSON() ([]byte, error) {
+	return json.Marshal(&featureCollection{
+		Type:     TypePropFeatureCollection,
+		BBox:     c.BBox,
+		Features: c.Features,
+	})
+}
+
+// UnmarshalJSON parses the JSON-encoded data and stores the result.
+func (c *FeatureCollection) UnmarshalJSON(data []byte) error {
+	col := featureCollection{}
+	if err := json.Unmarshal(data, &col); err != nil {
+		return err
+	}
+
+	if col.Type != TypePropFeatureCollection {
+		return fmt.Errorf("type is '%s', expecting '%s'", col.Type, TypePropFeatureCollection)
+	}
+
+	c.BBox = col.BBox
+	c.Features = col.Features
+	return nil
+}
+
+// WithBoundingBox sets the optional bounding box.
+func (c *FeatureCollection) WithBoundingBox(bottomLeft, topRight Position) *FeatureCollection {
+	c.BBox = &BoundingBox{
+		BottomLeft: bottomLeft,
+		TopRight:   topRight,
+	}
+	return c
+}
+
+type featureCollection struct {
+	Type     string       `json:"type"`
+	BBox     *BoundingBox `json:"bbox,omitempty"`
+	Features []Feature    `json:"features"`
 }

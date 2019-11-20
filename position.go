@@ -32,7 +32,7 @@ func NewPositionWithElevation(long, lat, elevation float64) Position {
 
 // MarshalJSON returns the JSON encoding of the Position.
 // The JSON encoding is an array of numbers with the longitude followed by the latitude, and optional elevation.
-func (p *Position) MarshalJSON() ([]byte, error) {
+func (p Position) MarshalJSON() ([]byte, error) {
 	if p.Elevation.IsSet() {
 		return json.Marshal(&position{
 			p.Longitude,
