@@ -10,9 +10,9 @@ import (
 
 func TestLineString(t *testing.T) {
 	linestring := geojson.NewLineString(
-		geojson.NewPosition(12, 34),
-		geojson.NewPosition(56, 78),
-		geojson.NewPosition(90, 12),
+		geojson.MakePosition(12, 34),
+		geojson.MakePosition(56, 78),
+		geojson.MakePosition(90, 12),
 	)
 
 	err := linestring.Geometry.Validate()
@@ -42,7 +42,7 @@ func TestLineString(t *testing.T) {
 
 func TestLineStringTooShort(t *testing.T) {
 	err := geojson.LineString{
-		geojson.NewPosition(12, 34),
+		geojson.MakePosition(12, 34),
 	}.Validate()
 	require.Error(t, err)
 }
@@ -50,13 +50,13 @@ func TestLineStringTooShort(t *testing.T) {
 func TestMultiLineString(t *testing.T) {
 	linestrings := geojson.NewMultiLineString(
 		[]geojson.Position{
-			geojson.NewPosition(12, 34),
-			geojson.NewPosition(56, 78),
-			geojson.NewPosition(90, 12),
+			geojson.MakePosition(12, 34),
+			geojson.MakePosition(56, 78),
+			geojson.MakePosition(90, 12),
 		},
 		[]geojson.Position{
-			geojson.NewPosition(23, 45),
-			geojson.NewPosition(67, 89),
+			geojson.MakePosition(23, 45),
+			geojson.MakePosition(67, 89),
 		},
 	)
 
@@ -94,7 +94,7 @@ func TestMultiLineString(t *testing.T) {
 func TestMultiLineStringTooShort(t *testing.T) {
 	err := geojson.NewMultiLineString(
 		[]geojson.Position{
-			geojson.NewPosition(12, 34),
+			geojson.MakePosition(12, 34),
 		}).Geometry.Validate()
 	require.Error(t, err)
 }

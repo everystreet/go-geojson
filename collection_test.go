@@ -13,13 +13,13 @@ func TestGeometryCollection(t *testing.T) {
 		geojson.NewPoint(9, 45).Geometry,
 		geojson.NewMultiLineString(
 			[]geojson.Position{
-				geojson.NewPosition(12, 34),
-				geojson.NewPosition(56, 78),
-				geojson.NewPosition(90, 12),
+				geojson.MakePosition(12, 34),
+				geojson.MakePosition(56, 78),
+				geojson.MakePosition(90, 12),
 			},
 			[]geojson.Position{
-				geojson.NewPosition(23, 45),
-				geojson.NewPosition(67, 89),
+				geojson.MakePosition(23, 45),
+				geojson.MakePosition(67, 89),
 			},
 		).Geometry,
 		geojson.NewGeometryCollection(

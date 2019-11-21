@@ -9,7 +9,7 @@ import (
 )
 
 func TestPosition(t *testing.T) {
-	pos := geojson.NewPosition(45.4642035, 9.189982)
+	pos := geojson.MakePosition(45.4642035, 9.189982)
 
 	data, err := json.Marshal(&pos)
 	require.NoError(t, err)
@@ -22,7 +22,7 @@ func TestPosition(t *testing.T) {
 }
 
 func TestPositionWithElevation(t *testing.T) {
-	pos := geojson.NewPositionWithElevation(45.4642035, 9.189982, 125)
+	pos := geojson.MakePositionWithElevation(45.4642035, 9.189982, 125)
 
 	data, err := json.Marshal(&pos)
 	require.NoError(t, err)

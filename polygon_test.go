@@ -11,19 +11,19 @@ import (
 func TestPolygon(t *testing.T) {
 	polygon := geojson.NewPolygon(
 		[]geojson.Position{
-			geojson.NewPosition(7, 7),
-			geojson.NewPosition(4, 8),
-			geojson.NewPosition(3, 4),
-			geojson.NewPosition(5, 2),
-			geojson.NewPosition(7, 3),
-			geojson.NewPosition(7, 7),
+			geojson.MakePosition(7, 7),
+			geojson.MakePosition(4, 8),
+			geojson.MakePosition(3, 4),
+			geojson.MakePosition(5, 2),
+			geojson.MakePosition(7, 3),
+			geojson.MakePosition(7, 7),
 		},
 		[]geojson.Position{
-			geojson.NewPosition(4, 4),
-			geojson.NewPosition(4, 6),
-			geojson.NewPosition(5, 7),
-			geojson.NewPosition(6, 4),
-			geojson.NewPosition(4, 4),
+			geojson.MakePosition(4, 4),
+			geojson.MakePosition(4, 6),
+			geojson.MakePosition(5, 7),
+			geojson.MakePosition(6, 4),
+			geojson.MakePosition(4, 4),
 		},
 	)
 
@@ -68,27 +68,27 @@ func TestMultiPolygon(t *testing.T) {
 	polygons := geojson.NewMultiPolygon(
 		[][]geojson.Position{
 			{
-				geojson.NewPosition(7, 7),
-				geojson.NewPosition(4, 8),
-				geojson.NewPosition(3, 4),
-				geojson.NewPosition(5, 2),
-				geojson.NewPosition(7, 3),
-				geojson.NewPosition(7, 7),
+				geojson.MakePosition(7, 7),
+				geojson.MakePosition(4, 8),
+				geojson.MakePosition(3, 4),
+				geojson.MakePosition(5, 2),
+				geojson.MakePosition(7, 3),
+				geojson.MakePosition(7, 7),
 			},
 			[]geojson.Position{
-				geojson.NewPosition(4, 4),
-				geojson.NewPosition(4, 6),
-				geojson.NewPosition(5, 7),
-				geojson.NewPosition(6, 4),
-				geojson.NewPosition(4, 4),
+				geojson.MakePosition(4, 4),
+				geojson.MakePosition(4, 6),
+				geojson.MakePosition(5, 7),
+				geojson.MakePosition(6, 4),
+				geojson.MakePosition(4, 4),
 			},
 		},
 		[][]geojson.Position{
 			{
-				geojson.NewPosition(7, 7),
-				geojson.NewPosition(3, 4),
-				geojson.NewPosition(5, 2),
-				geojson.NewPosition(7, 7),
+				geojson.MakePosition(7, 7),
+				geojson.MakePosition(3, 4),
+				geojson.MakePosition(5, 2),
+				geojson.MakePosition(7, 7),
 			},
 		},
 	)
@@ -145,9 +145,9 @@ func TestMultiPolygonErrors(t *testing.T) {
 		err := geojson.NewMultiPolygon(
 			[][]geojson.Position{
 				{
-					geojson.NewPosition(7, 7),
-					geojson.NewPosition(4, 8),
-					geojson.NewPosition(3, 4),
+					geojson.MakePosition(7, 7),
+					geojson.MakePosition(4, 8),
+					geojson.MakePosition(3, 4),
 				},
 			}).Geometry.Validate()
 		require.Error(t, err)
@@ -158,10 +158,10 @@ func TestMultiPolygonErrors(t *testing.T) {
 		err := geojson.NewMultiPolygon(
 			[][]geojson.Position{
 				{
-					geojson.NewPosition(7, 7),
-					geojson.NewPosition(4, 8),
-					geojson.NewPosition(3, 4),
-					geojson.NewPosition(5, 2),
+					geojson.MakePosition(7, 7),
+					geojson.MakePosition(4, 8),
+					geojson.MakePosition(3, 4),
+					geojson.MakePosition(5, 2),
 				},
 			}).Geometry.Validate()
 		require.Error(t, err)
@@ -172,10 +172,10 @@ func TestMultiPolygonErrors(t *testing.T) {
 		err := geojson.NewMultiPolygon(
 			[][]geojson.Position{
 				{
-					geojson.NewPosition(4, 4),
-					geojson.NewPosition(4, 6),
-					geojson.NewPosition(5, 7),
-					geojson.NewPosition(4, 4),
+					geojson.MakePosition(4, 4),
+					geojson.MakePosition(4, 6),
+					geojson.MakePosition(5, 7),
+					geojson.MakePosition(4, 4),
 				},
 			}).Geometry.Validate()
 		require.Error(t, err)
@@ -186,16 +186,16 @@ func TestMultiPolygonErrors(t *testing.T) {
 		err := geojson.NewMultiPolygon(
 			[][]geojson.Position{
 				{
-					geojson.NewPosition(7, 7),
-					geojson.NewPosition(4, 8),
-					geojson.NewPosition(3, 4),
-					geojson.NewPosition(7, 7),
+					geojson.MakePosition(7, 7),
+					geojson.MakePosition(4, 8),
+					geojson.MakePosition(3, 4),
+					geojson.MakePosition(7, 7),
 				},
 				{
-					geojson.NewPosition(7, 7),
-					geojson.NewPosition(4, 8),
-					geojson.NewPosition(3, 4),
-					geojson.NewPosition(7, 7),
+					geojson.MakePosition(7, 7),
+					geojson.MakePosition(4, 8),
+					geojson.MakePosition(3, 4),
+					geojson.MakePosition(7, 7),
 				},
 			}).Geometry.Validate()
 		require.Error(t, err)

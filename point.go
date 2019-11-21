@@ -9,7 +9,7 @@ type Point Position
 
 // NewPoint returns a Point Feature with the specified longitude and latitude.
 func NewPoint(lat, lng float64) *Feature {
-	pos := NewPosition(lat, lng)
+	pos := MakePosition(lat, lng)
 	return &Feature{
 		Geometry: (*Point)(&pos),
 	}
@@ -17,7 +17,7 @@ func NewPoint(lat, lng float64) *Feature {
 
 // NewPointWithElevation returns a Point Feature with the specified longitude, latitude and elevation.
 func NewPointWithElevation(lat, lng, elevation float64) *Feature {
-	pos := NewPositionWithElevation(lat, lng, elevation)
+	pos := MakePositionWithElevation(lat, lng, elevation)
 	return &Feature{
 		Geometry: (*Point)(&pos),
 	}

@@ -55,8 +55,8 @@ func TestPointWithElevation(t *testing.T) {
 
 func TestMultiPoint(t *testing.T) {
 	multipoint := geojson.NewMultiPoint(
-		geojson.NewPosition(12, 34),
-		geojson.NewPositionWithElevation(56, 78, 4),
+		geojson.MakePosition(12, 34),
+		geojson.MakePositionWithElevation(56, 78, 4),
 	)
 
 	err := multipoint.Geometry.Validate()

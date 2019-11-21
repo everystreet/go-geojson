@@ -46,11 +46,11 @@ func (b *BoundingBox) UnmarshalJSON(data []byte) error {
 
 	switch len(pos) {
 	case 4:
-		b.BottomLeft = NewPosition(pos[1], pos[0])
-		b.TopRight = NewPosition(pos[3], pos[2])
+		b.BottomLeft = MakePosition(pos[1], pos[0])
+		b.TopRight = MakePosition(pos[3], pos[2])
 	case 6:
-		b.BottomLeft = NewPositionWithElevation(pos[1], pos[0], pos[2])
-		b.TopRight = NewPositionWithElevation(pos[4], pos[3], pos[5])
+		b.BottomLeft = MakePositionWithElevation(pos[1], pos[0], pos[2])
+		b.TopRight = MakePositionWithElevation(pos[4], pos[3], pos[5])
 	default:
 		return fmt.Errorf("invalid position")
 	}

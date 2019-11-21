@@ -14,15 +14,15 @@ type Position struct {
 	Elevation OptionalFloat64
 }
 
-// NewPosition from longitude and latitude.
-func NewPosition(lat, lng float64) Position {
+// MakePosition from longitude and latitude.
+func MakePosition(lat, lng float64) Position {
 	return Position{
 		LatLng: s2.LatLngFromDegrees(lat, lng),
 	}
 }
 
-// NewPositionWithElevation from longitude, latitude and elevation.
-func NewPositionWithElevation(lat, lng, elevation float64) Position {
+// MakePositionWithElevation from longitude, latitude and elevation.
+func MakePositionWithElevation(lat, lng, elevation float64) Position {
 	return Position{
 		LatLng:    s2.LatLngFromDegrees(lat, lng),
 		Elevation: NewOptionalFloat64(elevation),

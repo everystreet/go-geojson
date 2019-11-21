@@ -56,12 +56,12 @@ The easiest way to create GeoJSON objects is using the provided helpers. The exa
 
 ```go
 linestring := geojson.NewLineString(
-    geojson.NewPosition(34, 12),
-    geojson.NewPosition(78, 56),
-    geojson.NewPosition(12, 90),
+    geojson.MakePosition(34, 12),
+    geojson.MakePosition(78, 56),
+    geojson.MakePosition(12, 90),
 ).WithBoundingBox( // optionally set bounding box
-    geojson.NewPosition(1, 1),
-    geojson.NewPosition(100, 100),
+    geojson.MakePosition(1, 1),
+    geojson.MakePosition(100, 100),
 )
 
 data, _ := json.Marshal(linestring)
