@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/everystreet/go-geojson"
+	"github.com/everystreet/go-geojson/v2"
 	"github.com/stretchr/testify/require"
 )
 
