@@ -4,28 +4,27 @@ import (
 	"encoding/json"
 	"fmt"
 	"strconv"
+
+	"github.com/golang/geo/s2"
 )
 
 // Position represents a longitude and latitude with optional elevation/altitude.
 type Position struct {
-	Longitude float64
-	Latitude  float64
+	s2.LatLng
 	Elevation OptionalFloat64
 }
 
 // NewPosition from longitude and latitude.
-func NewPosition(long, lat float64) Position {
+func NewPosition(lat, lng float64) Position {
 	return Position{
-		Longitude: long,
-		Latitude:  lat,
+		LatLng: s2.LatLngFromDegrees(lat, lng),
 	}
 }
 
 // NewPositionWithElevation from longitude, latitude and elevation.
-func NewPositionWithElevation(long, lat, elevation float64) Position {
+func NewPositionWithElevation(lat, lng, elevation float64) Position {
 	return Position{
-		Longitude: long,
-		Latitude:  lat,
+		LatLng:    s2.LatLngFromDegrees(lat, lng),
 		Elevation: NewOptionalFloat64(elevation),
 	}
 }
@@ -35,15 +34,15 @@ func NewPositionWithElevation(long, lat, elevation float64) Position {
 func (p Position) MarshalJSON() ([]byte, error) {
 	if p.Elevation.IsSet() {
 		return json.Marshal(&position{
-			p.Longitude,
-			p.Latitude,
+			p.Lng.Degrees(),
+			p.Lat.Degrees(),
 			p.Elevation.Value(),
 		})
 	}
 
 	return json.Marshal(&position{
-		p.Longitude,
-		p.Latitude,
+		p.Lng.Degrees(),
+		p.Lat.Degrees(),
 	})
 }
 
@@ -59,8 +58,7 @@ func (p *Position) UnmarshalJSON(data []byte) error {
 		p.Elevation = NewOptionalFloat64(pos[2])
 		fallthrough
 	case 2:
-		p.Longitude = pos[0]
-		p.Latitude = pos[1]
+		p.LatLng = s2.LatLngFromDegrees(pos[1], pos[0])
 	default:
 		return fmt.Errorf("invalid position")
 	}
@@ -69,9 +67,17 @@ func (p *Position) UnmarshalJSON(data []byte) error {
 
 func (p Position) String() string {
 	if p.Elevation.IsSet() {
-		return fmt.Sprintf("[%G, %G, %G]", p.Longitude, p.Latitude, p.Elevation.Value())
+		return fmt.Sprintf("[%G, %G, %G]", p.Lng.Degrees(), p.Lat.Degrees(), p.Elevation.Value())
 	}
-	return fmt.Sprintf("[%G, %G]", p.Longitude, p.Latitude)
+	return fmt.Sprintf("[%G, %G]", p.Lng.Degrees(), p.Lat.Degrees())
+}
+
+// Validate the position.
+func (p Position) Validate() error {
+	if !p.IsValid() {
+		return fmt.Errorf("invalid latlng")
+	}
+	return nil
 }
 
 // OptionalFloat64 is a type that represents a float64 that can be optionally set.

@@ -40,19 +40,19 @@ func TestGeometryCollection(t *testing.T) {
 			"geometries": [
 				{
 					"type": "Point",
-					"coordinates": [9, 45]
+					"coordinates": [45, 9]
 				},
 				{
 					"type": "MultiLineString",
 					"coordinates": [
 						[
-							[12, 34],
-							[56, 78],
-							[90, 12]
+							[34, 12],
+							[78, 56],
+							[12, 90]
 						],
 						[
-							[23, 45],
-							[67, 89]
+							[45, 23],
+							[89, 67]
 						]
 					]
 				},
@@ -61,7 +61,7 @@ func TestGeometryCollection(t *testing.T) {
 					"geometries": [
 						{
 							"type": "Point",
-							"coordinates": [37, 12]
+							"coordinates": [12, 37]
 						}
 					]
 				}

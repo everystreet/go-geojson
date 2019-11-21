@@ -9,7 +9,7 @@ import (
 )
 
 func TestFeature(t *testing.T) {
-	feature := geojson.NewPoint(9.189982, 45.4642035)
+	feature := geojson.NewPoint(45.4642035, 9.189982)
 
 	data, err := json.Marshal(feature)
 	require.NoError(t, err)
@@ -18,7 +18,7 @@ func TestFeature(t *testing.T) {
 			"type": "Feature",
 			"geometry": {
 				"type": "Point",
-				"coordinates": [9.189982,45.4642035]
+				"coordinates": [9.189982, 45.4642035]
 			}
 		}`,
 		string(data))
@@ -30,11 +30,10 @@ func TestFeature(t *testing.T) {
 }
 
 func TestFeatureWithBoundingBox(t *testing.T) {
-	feature := geojson.NewPoint(9.189982, 45.4642035).
-		WithBoundingBox(
-			geojson.NewPosition(7.1827768, 43.7032932),
-			geojson.NewPosition(11.2387051, 47.2856026),
-		)
+	feature := geojson.NewPoint(45.4642035, 9.189982).WithBoundingBox(
+		geojson.NewPosition(43.7032932, 7.1827761),
+		geojson.NewPosition(47.2856026, 11.2387051),
+	)
 
 	data, err := json.Marshal(feature)
 	require.NoError(t, err)
@@ -42,12 +41,12 @@ func TestFeatureWithBoundingBox(t *testing.T) {
 		{
 			"type": "Feature",
 			"bbox": [
-				7.1827768,  43.7032932,
+				7.1827761,  43.7032932,
 				11.2387051, 47.2856026
 			],
 			"geometry": {
 				"type": "Point",
-				"coordinates": [9.189982,45.4642035]
+				"coordinates": [9.189982, 45.4642035]
 			}
 		}`,
 		string(data))
@@ -59,7 +58,7 @@ func TestFeatureWithBoundingBox(t *testing.T) {
 }
 
 func TestFeatureWithProperties(t *testing.T) {
-	feature := geojson.NewPoint(9.189982, 45.4642035).
+	feature := geojson.NewPoint(45.4642035, 9.189982).
 		AddProperty("city", "Milan")
 
 	data, err := json.Marshal(feature)
@@ -69,7 +68,7 @@ func TestFeatureWithProperties(t *testing.T) {
 			"type": "Feature",
 			"geometry": {
 				"type": "Point",
-				"coordinates": [9.189982,45.4642035]
+				"coordinates": [9.189982, 45.4642035]
 			},
 			"properties": {
 				"city": "Milan"
@@ -85,8 +84,8 @@ func TestFeatureWithProperties(t *testing.T) {
 
 func TestFeatureCollection(t *testing.T) {
 	collection := geojson.NewFeatureCollection(
-		geojson.NewPoint(9.189982, 45.4642035),
-		geojson.NewPoint(79.9288064, 13.0473748),
+		geojson.NewPoint(45.4642035, 9.189982),
+		geojson.NewPoint(13.0473748, 79.9288064),
 	)
 
 	data, err := json.Marshal(collection)
@@ -99,14 +98,14 @@ func TestFeatureCollection(t *testing.T) {
 					"type": "Feature",
 					"geometry": {
 						"type": "Point",
-						"coordinates": [9.189982,45.4642035]
+						"coordinates": [9.189982, 45.4642035]
 					}
 				},
 				{
 					"type": "Feature",
 					"geometry": {
 						"type": "Point",
-						"coordinates": [79.9288064,13.0473748]
+						"coordinates": [79.9288064, 13.0473748]
 					}
 				}
 			]
@@ -121,11 +120,11 @@ func TestFeatureCollection(t *testing.T) {
 
 func TestFeatureCollectionWithBoundingBox(t *testing.T) {
 	collection := geojson.NewFeatureCollection(
-		geojson.NewPoint(9.189982, 45.4642035),
-		geojson.NewPoint(79.9288064, 13.0473748),
+		geojson.NewPoint(45.4642035, 9.189982),
+		geojson.NewPoint(13.0473748, 79.9288064),
 	).WithBoundingBox(
-		geojson.NewPosition(7.1827768, 43.7032932),
-		geojson.NewPosition(11.2387051, 47.2856026),
+		geojson.NewPosition(43.7032932, 7.1827761),
+		geojson.NewPosition(47.2856026, 11.2387051),
 	)
 
 	data, err := json.Marshal(collection)
@@ -134,7 +133,7 @@ func TestFeatureCollectionWithBoundingBox(t *testing.T) {
 		{
 			"type": "FeatureCollection",
 			"bbox": [
-				7.1827768,  43.7032932,
+				7.1827761,  43.7032932,
 				11.2387051, 47.2856026
 			],
 			"features": [
@@ -142,7 +141,7 @@ func TestFeatureCollectionWithBoundingBox(t *testing.T) {
 					"type": "Feature",
 					"geometry": {
 						"type": "Point",
-						"coordinates": [9.189982,45.4642035]
+						"coordinates": [9.189982, 45.4642035]
 					}
 				},
 				{

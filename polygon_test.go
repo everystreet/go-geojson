@@ -12,17 +12,17 @@ func TestPolygon(t *testing.T) {
 	polygon := geojson.NewPolygon(
 		[]geojson.Position{
 			geojson.NewPosition(7, 7),
-			geojson.NewPosition(8, 4),
-			geojson.NewPosition(4, 3),
-			geojson.NewPosition(2, 5),
-			geojson.NewPosition(3, 7),
+			geojson.NewPosition(4, 8),
+			geojson.NewPosition(3, 4),
+			geojson.NewPosition(5, 2),
+			geojson.NewPosition(7, 3),
 			geojson.NewPosition(7, 7),
 		},
 		[]geojson.Position{
 			geojson.NewPosition(4, 4),
-			geojson.NewPosition(6, 4),
-			geojson.NewPosition(7, 5),
 			geojson.NewPosition(4, 6),
+			geojson.NewPosition(5, 7),
+			geojson.NewPosition(6, 4),
 			geojson.NewPosition(4, 4),
 		},
 	)
@@ -69,25 +69,25 @@ func TestMultiPolygon(t *testing.T) {
 		[][]geojson.Position{
 			{
 				geojson.NewPosition(7, 7),
-				geojson.NewPosition(8, 4),
-				geojson.NewPosition(4, 3),
-				geojson.NewPosition(2, 5),
-				geojson.NewPosition(3, 7),
+				geojson.NewPosition(4, 8),
+				geojson.NewPosition(3, 4),
+				geojson.NewPosition(5, 2),
+				geojson.NewPosition(7, 3),
 				geojson.NewPosition(7, 7),
 			},
 			[]geojson.Position{
 				geojson.NewPosition(4, 4),
-				geojson.NewPosition(6, 4),
-				geojson.NewPosition(7, 5),
 				geojson.NewPosition(4, 6),
+				geojson.NewPosition(5, 7),
+				geojson.NewPosition(6, 4),
 				geojson.NewPosition(4, 4),
 			},
 		},
 		[][]geojson.Position{
 			{
 				geojson.NewPosition(7, 7),
-				geojson.NewPosition(4, 3),
-				geojson.NewPosition(2, 5),
+				geojson.NewPosition(3, 4),
+				geojson.NewPosition(5, 2),
 				geojson.NewPosition(7, 7),
 			},
 		},
@@ -146,8 +146,8 @@ func TestMultiPolygonErrors(t *testing.T) {
 			[][]geojson.Position{
 				{
 					geojson.NewPosition(7, 7),
-					geojson.NewPosition(8, 4),
-					geojson.NewPosition(4, 3),
+					geojson.NewPosition(4, 8),
+					geojson.NewPosition(3, 4),
 				},
 			}).Geometry.Validate()
 		require.Error(t, err)
@@ -159,9 +159,9 @@ func TestMultiPolygonErrors(t *testing.T) {
 			[][]geojson.Position{
 				{
 					geojson.NewPosition(7, 7),
-					geojson.NewPosition(8, 4),
-					geojson.NewPosition(4, 3),
-					geojson.NewPosition(2, 5),
+					geojson.NewPosition(4, 8),
+					geojson.NewPosition(3, 4),
+					geojson.NewPosition(5, 2),
 				},
 			}).Geometry.Validate()
 		require.Error(t, err)
@@ -173,8 +173,8 @@ func TestMultiPolygonErrors(t *testing.T) {
 			[][]geojson.Position{
 				{
 					geojson.NewPosition(4, 4),
-					geojson.NewPosition(6, 4),
-					geojson.NewPosition(7, 5),
+					geojson.NewPosition(4, 6),
+					geojson.NewPosition(5, 7),
 					geojson.NewPosition(4, 4),
 				},
 			}).Geometry.Validate()
@@ -187,14 +187,14 @@ func TestMultiPolygonErrors(t *testing.T) {
 			[][]geojson.Position{
 				{
 					geojson.NewPosition(7, 7),
-					geojson.NewPosition(8, 4),
-					geojson.NewPosition(4, 3),
+					geojson.NewPosition(4, 8),
+					geojson.NewPosition(3, 4),
 					geojson.NewPosition(7, 7),
 				},
 				{
 					geojson.NewPosition(7, 7),
-					geojson.NewPosition(8, 4),
-					geojson.NewPosition(4, 3),
+					geojson.NewPosition(4, 8),
+					geojson.NewPosition(3, 4),
 					geojson.NewPosition(7, 7),
 				},
 			}).Geometry.Validate()

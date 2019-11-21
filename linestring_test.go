@@ -26,9 +26,9 @@ func TestLineString(t *testing.T) {
 			"geometry": {
 				"type": "LineString",
 				"coordinates": [
-					[12, 34],
-					[56, 78],
-					[90, 12]
+					[34, 12],
+					[78, 56],
+					[12, 90]
 				]
 			}
 		}`,
@@ -72,13 +72,13 @@ func TestMultiLineString(t *testing.T) {
 				"type": "MultiLineString",
 				"coordinates": [
 					[
-						[12, 34],
-						[56, 78],
-						[90, 12]
+						[34, 12],
+						[78, 56],
+						[12, 90]
 					],
 					[
-						[23, 45],
-						[67, 89]
+						[45, 23],
+						[89, 67]
 					]
 				]
 			}

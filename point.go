@@ -8,23 +8,18 @@ import (
 type Point Position
 
 // NewPoint returns a Point Feature with the specified longitude and latitude.
-func NewPoint(long, lat float64) *Feature {
+func NewPoint(lat, lng float64) *Feature {
+	pos := NewPosition(lat, lng)
 	return &Feature{
-		Geometry: &Point{
-			Longitude: long,
-			Latitude:  lat,
-		},
+		Geometry: (*Point)(&pos),
 	}
 }
 
 // NewPointWithElevation returns a Point Feature with the specified longitude, latitude and elevation.
-func NewPointWithElevation(long, lat, elevation float64) *Feature {
+func NewPointWithElevation(lat, lng, elevation float64) *Feature {
+	pos := NewPositionWithElevation(lat, lng, elevation)
 	return &Feature{
-		Geometry: &Point{
-			Longitude: long,
-			Latitude:  lat,
-			Elevation: NewOptionalFloat64(elevation),
-		},
+		Geometry: (*Point)(&pos),
 	}
 }
 
