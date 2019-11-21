@@ -6,6 +6,20 @@ This package supports marshalling and unmarshalling of all geometry types: `Poin
 
 ## Usage
 
+1. The command below adds the latest version of `go-geojson` as a dependency to your module:
+
+    ```bash
+    go get -u github.com/everystreet/go-geojson/v2
+    ```
+
+2. Then the following line can be used to import the package and use the examples below:
+
+    ```go
+    import "github.com/everystreet/go-geojson/v2"
+    ```
+
+## Examples
+
 `go-geojson` implements the `json.Marshaler` and `json.Unmarshaler` interfaces. This means you can work with GeoJSON in the same way as you would with "regular" JSON.
 
 ### Unmarshal
@@ -42,9 +56,9 @@ The easiest way to create GeoJSON objects is using the provided helpers. The exa
 
 ```go
 linestring := geojson.NewLineString(
-    geojson.NewPosition(12, 34),
-    geojson.NewPosition(56, 78),
-    geojson.NewPosition(90, 12),
+    geojson.NewPosition(34, 12),
+    geojson.NewPosition(78, 56),
+    geojson.NewPosition(12, 90),
 ).WithBoundingBox( // optionally set bounding box
     geojson.NewPosition(1, 1),
     geojson.NewPosition(100, 100),
