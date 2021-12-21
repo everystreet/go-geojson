@@ -75,7 +75,7 @@ func TestMultiPolygon(t *testing.T) {
 				geojson.MakePosition(7, 3),
 				geojson.MakePosition(7, 7),
 			},
-			[]geojson.Position{
+			{
 				geojson.MakePosition(4, 4),
 				geojson.MakePosition(4, 6),
 				geojson.MakePosition(5, 7),
