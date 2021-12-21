@@ -24,9 +24,9 @@ func (p Polygon) Type() GeometryType {
 func (p Polygon) Validate() error {
 	for i, ring := range p {
 		if len(ring) < 4 {
-			return errLinearRingTooShort
+			return fmt.Errorf("polygon ring is too short - must contain at least 4 positions")
 		} else if ring[len(ring)-1] != ring[0] {
-			return errLinearRingNotClosed
+			return fmt.Errorf("polygon ring must be closed")
 		}
 
 		if angle := LoopToS2(ring).TurningAngle(); i == 0 && angle >= 0 { // CCW
@@ -106,8 +106,3 @@ func (m *MultiPolygon) UnmarshalJSON(data []byte) error {
 	*m = MultiPolygon(geo.Coordinates)
 	return nil
 }
-
-var (
-	errLinearRingTooShort  = fmt.Errorf("Polygon ring is too short - must contain at least 4 positions")
-	errLinearRingNotClosed = fmt.Errorf("Polygon ring must be closed")
-)
