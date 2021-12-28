@@ -1,4 +1,4 @@
-module github.com/everystreet/go-geojson/v2
+module github.com/everystreet/go-geojson/v3
 
 go 1.13
 

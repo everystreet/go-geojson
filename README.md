@@ -9,13 +9,13 @@ This package supports marshalling and unmarshalling of all geometry types: `Poin
 1. The command below adds the latest version of `go-geojson` as a dependency to your module:
 
     ```bash
-    go get -u github.com/everystreet/go-geojson/v2
+    go get -u github.com/everystreet/go-geojson/v3
     ```
 
 2. Then the following line can be used to import the package and use the examples below:
 
     ```go
-    import "github.com/everystreet/go-geojson/v2"
+    import "github.com/everystreet/go-geojson/v3"
     ```
 
 ## Examples

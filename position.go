@@ -34,15 +34,15 @@ func MakePositionWithElevation(lat, lng, elevation float64) Position {
 func (p Position) MarshalJSON() ([]byte, error) {
 	if p.Elevation.IsSet() {
 		return json.Marshal(&position{
-			p.Lng.Degrees(),
-			p.Lat.Degrees(),
+			p.LatLng.Lng.Degrees(),
+			p.LatLng.Lat.Degrees(),
 			p.Elevation.Value(),
 		})
 	}
 
 	return json.Marshal(&position{
-		p.Lng.Degrees(),
-		p.Lat.Degrees(),
+		p.LatLng.Lng.Degrees(),
+		p.LatLng.Lat.Degrees(),
 	})
 }
 
@@ -67,14 +67,14 @@ func (p *Position) UnmarshalJSON(data []byte) error {
 
 func (p Position) String() string {
 	if p.Elevation.IsSet() {
-		return fmt.Sprintf("[%G, %G, %G]", p.Lng.Degrees(), p.Lat.Degrees(), p.Elevation.Value())
+		return fmt.Sprintf("[%G, %G, %G]", p.LatLng.Lng.Degrees(), p.LatLng.Lat.Degrees(), p.Elevation.Value())
 	}
-	return fmt.Sprintf("[%G, %G]", p.Lng.Degrees(), p.Lat.Degrees())
+	return fmt.Sprintf("[%G, %G]", p.LatLng.Lng.Degrees(), p.LatLng.Lat.Degrees())
 }
 
 // Validate the position.
 func (p Position) Validate() error {
-	if !p.IsValid() {
+	if !p.LatLng.IsValid() {
 		return fmt.Errorf("invalid latlng")
 	}
 	return nil

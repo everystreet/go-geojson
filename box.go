@@ -20,20 +20,20 @@ func (b BoundingBox) MarshalJSON() ([]byte, error) {
 		}
 
 		return json.Marshal(&position{
-			b.BottomLeft.Lng.Degrees(),
-			b.BottomLeft.Lat.Degrees(),
+			b.BottomLeft.LatLng.Lng.Degrees(),
+			b.BottomLeft.LatLng.Lat.Degrees(),
 			b.BottomLeft.Elevation.Value(),
-			b.TopRight.Lng.Degrees(),
-			b.TopRight.Lat.Degrees(),
+			b.TopRight.LatLng.Lng.Degrees(),
+			b.TopRight.LatLng.Lat.Degrees(),
 			b.TopRight.Elevation.Value(),
 		})
 	}
 
 	return json.Marshal(&position{
-		b.BottomLeft.Lng.Degrees(),
-		b.BottomLeft.Lat.Degrees(),
-		b.TopRight.Lng.Degrees(),
-		b.TopRight.Lat.Degrees(),
+		b.BottomLeft.LatLng.Lng.Degrees(),
+		b.BottomLeft.LatLng.Lat.Degrees(),
+		b.TopRight.LatLng.Lng.Degrees(),
+		b.TopRight.LatLng.Lat.Degrees(),
 	})
 }
 
@@ -62,9 +62,9 @@ func (b BoundingBox) Validate() error {
 	if (b.BottomLeft.Elevation.IsSet() && b.TopRight.Elevation.IsSet()) ||
 		(!b.BottomLeft.Elevation.IsSet() && !b.TopRight.Elevation.IsSet()) {
 		return fmt.Errorf("bounding box positions must be in the same dimension")
-	} else if !b.BottomLeft.IsValid() {
+	} else if !b.BottomLeft.LatLng.IsValid() {
 		return fmt.Errorf("bottom left is invalid")
-	} else if !b.TopRight.IsValid() {
+	} else if !b.TopRight.LatLng.IsValid() {
 		return fmt.Errorf("top right is invalid")
 	}
 	return nil
