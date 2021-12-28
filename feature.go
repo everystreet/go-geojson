@@ -98,15 +98,6 @@ func (c *FeatureCollection) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-// WithBoundingBox sets the optional bounding box.
-func (c *FeatureCollection) WithBoundingBox(bottomLeft, topRight Position) *FeatureCollection {
-	c.BBox = &BoundingBox{
-		BottomLeft: bottomLeft,
-		TopRight:   topRight,
-	}
-	return c
-}
-
 type featureCollection struct {
 	Type     string              `json:"type"`
 	BBox     *BoundingBox        `json:"bbox,omitempty"`
