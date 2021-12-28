@@ -9,28 +9,30 @@ import (
 )
 
 func TestPolygon(t *testing.T) {
-	polygon := geojson.NewPolygon(
-		[]geojson.Position{
-			geojson.MakePosition(7, 7),
-			geojson.MakePosition(4, 8),
-			geojson.MakePosition(3, 4),
-			geojson.MakePosition(5, 2),
-			geojson.MakePosition(7, 3),
-			geojson.MakePosition(7, 7),
-		},
-		[]geojson.Position{
-			geojson.MakePosition(4, 4),
-			geojson.MakePosition(4, 6),
-			geojson.MakePosition(5, 7),
-			geojson.MakePosition(6, 4),
-			geojson.MakePosition(4, 4),
-		},
-	)
+	feature := geojson.Feature[*geojson.Polygon]{
+		Geometry: geojson.NewPolygon(
+			[]geojson.Position{
+				geojson.MakePosition(7, 7),
+				geojson.MakePosition(4, 8),
+				geojson.MakePosition(3, 4),
+				geojson.MakePosition(5, 2),
+				geojson.MakePosition(7, 3),
+				geojson.MakePosition(7, 7),
+			},
+			[]geojson.Position{
+				geojson.MakePosition(4, 4),
+				geojson.MakePosition(4, 6),
+				geojson.MakePosition(5, 7),
+				geojson.MakePosition(6, 4),
+				geojson.MakePosition(4, 4),
+			},
+		),
+	}
 
-	err := polygon.Geometry.Validate()
+	err := feature.Geometry.Validate()
 	require.NoError(t, err)
 
-	data, err := json.Marshal(&polygon)
+	data, err := json.Marshal(&feature)
 	require.NoError(t, err)
 	require.JSONEq(t, `
 		{
@@ -55,48 +57,49 @@ func TestPolygon(t *testing.T) {
 					]
 				]
 			}
-		}`,
-		string(data))
+		}`, string(data))
 
-	unmarshalled := geojson.Feature{}
+	var unmarshalled geojson.Feature[*geojson.Polygon]
 	err = json.Unmarshal(data, &unmarshalled)
 	require.NoError(t, err)
-	require.Equal(t, polygon, &unmarshalled)
+	require.Equal(t, feature, unmarshalled)
 }
 
 func TestMultiPolygon(t *testing.T) {
-	polygons := geojson.NewMultiPolygon(
-		[][]geojson.Position{
-			{
-				geojson.MakePosition(7, 7),
-				geojson.MakePosition(4, 8),
-				geojson.MakePosition(3, 4),
-				geojson.MakePosition(5, 2),
-				geojson.MakePosition(7, 3),
-				geojson.MakePosition(7, 7),
+	feature := geojson.Feature[*geojson.MultiPolygon]{
+		Geometry: geojson.NewMultiPolygon(
+			[][]geojson.Position{
+				{
+					geojson.MakePosition(7, 7),
+					geojson.MakePosition(4, 8),
+					geojson.MakePosition(3, 4),
+					geojson.MakePosition(5, 2),
+					geojson.MakePosition(7, 3),
+					geojson.MakePosition(7, 7),
+				},
+				{
+					geojson.MakePosition(4, 4),
+					geojson.MakePosition(4, 6),
+					geojson.MakePosition(5, 7),
+					geojson.MakePosition(6, 4),
+					geojson.MakePosition(4, 4),
+				},
 			},
-			{
-				geojson.MakePosition(4, 4),
-				geojson.MakePosition(4, 6),
-				geojson.MakePosition(5, 7),
-				geojson.MakePosition(6, 4),
-				geojson.MakePosition(4, 4),
+			[][]geojson.Position{
+				{
+					geojson.MakePosition(7, 7),
+					geojson.MakePosition(3, 4),
+					geojson.MakePosition(5, 2),
+					geojson.MakePosition(7, 7),
+				},
 			},
-		},
-		[][]geojson.Position{
-			{
-				geojson.MakePosition(7, 7),
-				geojson.MakePosition(3, 4),
-				geojson.MakePosition(5, 2),
-				geojson.MakePosition(7, 7),
-			},
-		},
-	)
+		),
+	}
 
-	err := polygons.Geometry.Validate()
+	err := feature.Geometry.Validate()
 	require.NoError(t, err)
 
-	data, err := json.Marshal(&polygons)
+	data, err := json.Marshal(&feature)
 	require.NoError(t, err)
 	require.JSONEq(t, `
 		{
@@ -131,73 +134,84 @@ func TestMultiPolygon(t *testing.T) {
 					]
 				]
 			}
-		}`,
-		string(data))
+		}`, string(data))
 
-	unmarshalled := geojson.Feature{}
+	var unmarshalled geojson.Feature[*geojson.MultiPolygon]
 	err = json.Unmarshal(data, &unmarshalled)
 	require.NoError(t, err)
-	require.Equal(t, polygons, &unmarshalled)
+	require.Equal(t, feature, unmarshalled)
 }
 
 func TestMultiPolygonErrors(t *testing.T) {
 	t.Run("ring too short", func(t *testing.T) {
-		err := geojson.NewMultiPolygon(
-			[][]geojson.Position{
-				{
-					geojson.MakePosition(7, 7),
-					geojson.MakePosition(4, 8),
-					geojson.MakePosition(3, 4),
-				},
-			}).Geometry.Validate()
+		err := geojson.Feature[*geojson.MultiPolygon]{
+			Geometry: geojson.NewMultiPolygon(
+				[][]geojson.Position{
+					{
+						geojson.MakePosition(7, 7),
+						geojson.MakePosition(4, 8),
+						geojson.MakePosition(3, 4),
+					},
+				}),
+		}.Geometry.Validate()
+
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "is too short")
 	})
 
 	t.Run("ring not closed", func(t *testing.T) {
-		err := geojson.NewMultiPolygon(
-			[][]geojson.Position{
-				{
-					geojson.MakePosition(7, 7),
-					geojson.MakePosition(4, 8),
-					geojson.MakePosition(3, 4),
-					geojson.MakePosition(5, 2),
-				},
-			}).Geometry.Validate()
+		err := geojson.Feature[*geojson.MultiPolygon]{
+			Geometry: geojson.NewMultiPolygon(
+				[][]geojson.Position{
+					{
+						geojson.MakePosition(7, 7),
+						geojson.MakePosition(4, 8),
+						geojson.MakePosition(3, 4),
+						geojson.MakePosition(5, 2),
+					},
+				}),
+		}.Geometry.Validate()
+
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "must be closed")
 	})
 
 	t.Run("counter-clockwise exterior ring", func(t *testing.T) {
-		err := geojson.NewMultiPolygon(
-			[][]geojson.Position{
-				{
-					geojson.MakePosition(4, 4),
-					geojson.MakePosition(4, 6),
-					geojson.MakePosition(5, 7),
-					geojson.MakePosition(4, 4),
-				},
-			}).Geometry.Validate()
+		err := geojson.Feature[*geojson.MultiPolygon]{
+			Geometry: geojson.NewMultiPolygon(
+				[][]geojson.Position{
+					{
+						geojson.MakePosition(4, 4),
+						geojson.MakePosition(4, 6),
+						geojson.MakePosition(5, 7),
+						geojson.MakePosition(4, 4),
+					},
+				}),
+		}.Geometry.Validate()
+
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "exterior ring must be clockwise")
 	})
 
 	t.Run("clockwise interior ring", func(t *testing.T) {
-		err := geojson.NewMultiPolygon(
-			[][]geojson.Position{
-				{
-					geojson.MakePosition(7, 7),
-					geojson.MakePosition(4, 8),
-					geojson.MakePosition(3, 4),
-					geojson.MakePosition(7, 7),
-				},
-				{
-					geojson.MakePosition(7, 7),
-					geojson.MakePosition(4, 8),
-					geojson.MakePosition(3, 4),
-					geojson.MakePosition(7, 7),
-				},
-			}).Geometry.Validate()
+		err := geojson.Feature[*geojson.MultiPolygon]{
+			Geometry: geojson.NewMultiPolygon(
+				[][]geojson.Position{
+					{
+						geojson.MakePosition(7, 7),
+						geojson.MakePosition(4, 8),
+						geojson.MakePosition(3, 4),
+						geojson.MakePosition(7, 7),
+					},
+					{
+						geojson.MakePosition(7, 7),
+						geojson.MakePosition(4, 8),
+						geojson.MakePosition(3, 4),
+						geojson.MakePosition(7, 7),
+					},
+				}),
+		}.Geometry.Validate()
+
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "interior ring must be counter-clockwise")
 	})

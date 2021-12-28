@@ -12,8 +12,8 @@ const (
 )
 
 // Feature consists of a specific geometry type and a list of properties.
-type Feature struct {
-	Geometry   Geometry
+type Feature[G Geometry] struct {
+	Geometry   G
 	BBox       *BoundingBox
 	Properties PropertyList
 }
@@ -27,7 +27,7 @@ type Geometry interface {
 }
 
 // MarshalJSON returns the JSON encoding of the Feature.
-func (f Feature) MarshalJSON() ([]byte, error) {
+func (f Feature[G]) MarshalJSON() ([]byte, error) {
 	return json.Marshal(struct {
 		Type       string       `json:"type"`
 		BBox       *BoundingBox `json:"bbox,omitempty"`
@@ -42,7 +42,7 @@ func (f Feature) MarshalJSON() ([]byte, error) {
 }
 
 // UnmarshalJSON parses the JSON-encoded data and stores the result.
-func (f *Feature) UnmarshalJSON(data []byte) error {
+func (f *Feature[G]) UnmarshalJSON(data []byte) error {
 	var feature struct {
 		Type       string          `json:"type"`
 		BBox       *BoundingBox    `json:"bbox,omitempty"`
@@ -63,50 +63,14 @@ func (f *Feature) UnmarshalJSON(data []byte) error {
 	if err != nil {
 		return err
 	}
-	f.Geometry = geo
+	f.Geometry = geo.(G)
 	return nil
-}
-
-// WithBoundingBox sets the optional bounding box.
-func (f *Feature) WithBoundingBox(bottomLeft, topRight Position) *Feature {
-	f.BBox = &BoundingBox{
-		BottomLeft: bottomLeft,
-		TopRight:   topRight,
-	}
-	return f
-}
-
-// WithProperties sets the optional properties, removing all existing properties.
-func (f *Feature) WithProperties(props ...Property) *Feature {
-	f.Properties = PropertyList(props)
-	return f
-}
-
-// AddProperty appends a new property.
-func (f *Feature) AddProperty(name string, value interface{}) *Feature {
-	f.Properties = append(f.Properties, Property{
-		Name:  name,
-		Value: value,
-	})
-	return f
 }
 
 // FeatureCollection is a list of Features.
 type FeatureCollection struct {
-	Features []Feature
+	Features []Feature[Geometry]
 	BBox     *BoundingBox
-}
-
-// NewFeatureCollection returns a FeatureCollection consisting of the supplied Features.
-func NewFeatureCollection(features ...*Feature) *FeatureCollection {
-	c := FeatureCollection{
-		Features: make([]Feature, len(features)),
-	}
-
-	for i, f := range features {
-		c.Features[i] = *f
-	}
-	return &c
 }
 
 // MarshalJSON returns the JSON encoding of the FeatureCollection.
@@ -144,7 +108,7 @@ func (c *FeatureCollection) WithBoundingBox(bottomLeft, topRight Position) *Feat
 }
 
 type featureCollection struct {
-	Type     string       `json:"type"`
-	BBox     *BoundingBox `json:"bbox,omitempty"`
-	Features []Feature    `json:"features"`
+	Type     string              `json:"type"`
+	BBox     *BoundingBox        `json:"bbox,omitempty"`
+	Features []Feature[Geometry] `json:"features"`
 }

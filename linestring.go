@@ -9,11 +9,9 @@ import (
 type LineString []Position
 
 // NewLineString returns a LineString from the supplied positions.
-func NewLineString(pos1, pos2 Position, others ...Position) *Feature {
+func NewLineString(pos1, pos2 Position, others ...Position) *LineString {
 	all := append([]Position{pos1, pos2}, others...)
-	return &Feature{
-		Geometry: (*LineString)(&all),
-	}
+	return (*LineString)(&all)
 }
 
 // Type returns the geometry type.
@@ -55,10 +53,8 @@ func (l *LineString) UnmarshalJSON(data []byte) error {
 type MultiLineString [][]Position
 
 // NewMultiLineString returns a new MultiLineString from the supplied position "strings".
-func NewMultiLineString(ls ...[]Position) *Feature {
-	return &Feature{
-		Geometry: (*MultiLineString)(&ls),
-	}
+func NewMultiLineString(pos ...[]Position) *MultiLineString {
+	return (*MultiLineString)(&pos)
 }
 
 // Type returns the geometry type.

@@ -23,10 +23,8 @@ const (
 type GeometryCollection []Geometry
 
 // NewGeometryCollection returns a GeometryCollection Feature.
-func NewGeometryCollection(geos ...Geometry) *Feature {
-	return &Feature{
-		Geometry: (*GeometryCollection)(&geos),
-	}
+func NewGeometryCollection(geos ...Geometry) *GeometryCollection {
+	return (*GeometryCollection)(&geos)
 }
 
 // Type returns the geometry type.

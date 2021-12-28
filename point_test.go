@@ -9,12 +9,14 @@ import (
 )
 
 func TestPoint(t *testing.T) {
-	point := geojson.NewPoint(45.4642035, 9.189982)
+	feature := geojson.Feature[*geojson.Point]{
+		Geometry: geojson.NewPoint(45.4642035, 9.189982),
+	}
 
-	err := point.Geometry.Validate()
+	err := feature.Geometry.Validate()
 	require.NoError(t, err)
 
-	data, err := json.Marshal(point)
+	data, err := json.Marshal(feature)
 	require.NoError(t, err)
 	require.JSONEq(t, `
 		{
@@ -23,19 +25,20 @@ func TestPoint(t *testing.T) {
 				"type": "Point",
 				"coordinates": [9.189982, 45.4642035]
 			}
-		}`,
-		string(data))
+		}`, string(data))
 
-	unmarshalled := geojson.Feature{}
+	var unmarshalled geojson.Feature[*geojson.Point]
 	err = json.Unmarshal(data, &unmarshalled)
 	require.NoError(t, err)
-	require.Equal(t, point, &unmarshalled)
+	require.Equal(t, feature, unmarshalled)
 }
 
 func TestPointWithElevation(t *testing.T) {
-	point := geojson.NewPointWithElevation(45.4642035, 9.189982, 125)
+	feature := geojson.Feature[*geojson.Point]{
+		Geometry: geojson.NewPointWithElevation(45.4642035, 9.189982, 125),
+	}
 
-	data, err := json.Marshal(point)
+	data, err := json.Marshal(feature)
 	require.NoError(t, err)
 	require.JSONEq(t, `
 		{
@@ -44,25 +47,26 @@ func TestPointWithElevation(t *testing.T) {
 				"type": "Point",
 				"coordinates": [9.189982, 45.4642035, 125]
 			}
-		}`,
-		string(data))
+		}`, string(data))
 
-	unmarshalled := geojson.Feature{}
+	var unmarshalled geojson.Feature[*geojson.Point]
 	err = json.Unmarshal(data, &unmarshalled)
 	require.NoError(t, err)
-	require.Equal(t, point, &unmarshalled)
+	require.Equal(t, feature, unmarshalled)
 }
 
 func TestMultiPoint(t *testing.T) {
-	multipoint := geojson.NewMultiPoint(
-		geojson.MakePosition(12, 34),
-		geojson.MakePositionWithElevation(56, 78, 4),
-	)
+	feature := geojson.Feature[*geojson.MultiPoint]{
+		Geometry: geojson.NewMultiPoint(
+			geojson.MakePosition(12, 34),
+			geojson.MakePositionWithElevation(56, 78, 4),
+		),
+	}
 
-	err := multipoint.Geometry.Validate()
+	err := feature.Geometry.Validate()
 	require.NoError(t, err)
 
-	data, err := json.Marshal(multipoint)
+	data, err := json.Marshal(feature)
 	require.NoError(t, err)
 	require.JSONEq(t, `
 		{
@@ -74,11 +78,10 @@ func TestMultiPoint(t *testing.T) {
 					[78, 56, 4]
 				]
 			}
-		}`,
-		string(data))
+		}`, string(data))
 
-	unmarshalled := geojson.Feature{}
+	var unmarshalled geojson.Feature[*geojson.MultiPoint]
 	err = json.Unmarshal(data, &unmarshalled)
 	require.NoError(t, err)
-	require.Equal(t, multipoint, &unmarshalled)
+	require.Equal(t, feature, unmarshalled)
 }

@@ -52,17 +52,26 @@ case *geojson.LineString:
 
 ### Marshal
 
-The easiest way to create GeoJSON objects is using the provided helpers. The example below demonstrates creation of a simple LineString using `geojson.NewLineString`. The returned `geojson.Feature` type contains methods to add a bounding box and properties.
+GeoJSON features can be created to contain any of the supported geometry types. Additionally, an optional bounding box and property list can be added. Once the feature is constructed, it can be marshaled to JSON.
 
 ```go
-linestring := geojson.NewLineString(
-    geojson.MakePosition(34, 12),
-    geojson.MakePosition(78, 56),
-    geojson.MakePosition(12, 90),
-).WithBoundingBox( // optionally set bounding box
-    geojson.MakePosition(1, 1),
-    geojson.MakePosition(100, 100),
-)
+feature := geojson.Feature[*geojson.LineString]{
+    Geometry: geojson.NewLineString(
+        geojson.MakePosition(34, 12),
+        geojson.MakePosition(78, 56),
+        geojson.MakePosition(12, 90),
+    ),
+    BBox: &geojson.BoundingBox{
+        BottomLeft: geojson.MakePosition(1, 1),
+        TopRight:   geojson.MakePosition(100, 100),
+    },
+    Properties: geojson.NewPropertyList(
+        geojson.Property{
+            Name:  "foo",
+            Value: "bar",
+        },
+    ),
+}
 
 data, _ := json.Marshal(linestring)
 ```

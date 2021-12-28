@@ -9,16 +9,18 @@ import (
 )
 
 func TestLineString(t *testing.T) {
-	linestring := geojson.NewLineString(
-		geojson.MakePosition(12, 34),
-		geojson.MakePosition(56, 78),
-		geojson.MakePosition(90, 12),
-	)
+	feature := geojson.Feature[*geojson.LineString]{
+		Geometry: geojson.NewLineString(
+			geojson.MakePosition(12, 34),
+			geojson.MakePosition(56, 78),
+			geojson.MakePosition(90, 12),
+		),
+	}
 
-	err := linestring.Geometry.Validate()
+	err := feature.Geometry.Validate()
 	require.NoError(t, err)
 
-	data, err := json.Marshal(linestring)
+	data, err := json.Marshal(feature)
 	require.NoError(t, err)
 	require.JSONEq(t, `
 		{
@@ -31,13 +33,12 @@ func TestLineString(t *testing.T) {
 					[12, 90]
 				]
 			}
-		}`,
-		string(data))
+		}`, string(data))
 
-	unmarshalled := geojson.Feature{}
+	var unmarshalled geojson.Feature[*geojson.LineString]
 	err = json.Unmarshal(data, &unmarshalled)
 	require.NoError(t, err)
-	require.Equal(t, linestring, &unmarshalled)
+	require.Equal(t, feature, unmarshalled)
 }
 
 func TestLineStringTooShort(t *testing.T) {
@@ -48,22 +49,24 @@ func TestLineStringTooShort(t *testing.T) {
 }
 
 func TestMultiLineString(t *testing.T) {
-	linestrings := geojson.NewMultiLineString(
-		[]geojson.Position{
-			geojson.MakePosition(12, 34),
-			geojson.MakePosition(56, 78),
-			geojson.MakePosition(90, 12),
-		},
-		[]geojson.Position{
-			geojson.MakePosition(23, 45),
-			geojson.MakePosition(67, 89),
-		},
-	)
+	feature := geojson.Feature[*geojson.MultiLineString]{
+		Geometry: geojson.NewMultiLineString(
+			[]geojson.Position{
+				geojson.MakePosition(12, 34),
+				geojson.MakePosition(56, 78),
+				geojson.MakePosition(90, 12),
+			},
+			[]geojson.Position{
+				geojson.MakePosition(23, 45),
+				geojson.MakePosition(67, 89),
+			},
+		),
+	}
 
-	err := linestrings.Geometry.Validate()
+	err := feature.Geometry.Validate()
 	require.NoError(t, err)
 
-	data, err := json.Marshal(&linestrings)
+	data, err := json.Marshal(&feature)
 	require.NoError(t, err)
 	require.JSONEq(t, `
 		{
@@ -82,19 +85,20 @@ func TestMultiLineString(t *testing.T) {
 					]
 				]
 			}
-		}`,
-		string(data))
+		}`, string(data))
 
-	unmarshalled := geojson.Feature{}
+	var unmarshalled geojson.Feature[*geojson.MultiLineString]
 	err = json.Unmarshal(data, &unmarshalled)
 	require.NoError(t, err)
-	require.Equal(t, linestrings, &unmarshalled)
+	require.Equal(t, feature, unmarshalled)
 }
 
 func TestMultiLineStringTooShort(t *testing.T) {
-	err := geojson.NewMultiLineString(
-		[]geojson.Position{
-			geojson.MakePosition(12, 34),
-		}).Geometry.Validate()
-	require.Error(t, err)
+	require.Error(t, geojson.Feature[*geojson.MultiLineString]{
+		Geometry: geojson.NewMultiLineString(
+			[]geojson.Position{
+				geojson.MakePosition(12, 34),
+			},
+		),
+	}.Geometry.Validate())
 }
