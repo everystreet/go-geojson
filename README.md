@@ -27,9 +27,9 @@ This package supports marshalling and unmarshalling of all geometry types: `Poin
 The example below demonstrates how to unmarshal a GeoJSON Feature. Once unmarshalled into a `geojson.Feature`, you have access to the bounding box and properties, and the Geometry object. As the Geometry can be one of several types, a type switch can be used to determine the type and work with it.
 
 ```go
-var feature geojson.Feature
+var feature geojson.Feature[geojson.Geometry]
 
-_ = json.Unmarshal(`
+_ = json.Unmarshal([]byte(`
     {
         "type": "Feature",
         "geometry": {
@@ -40,14 +40,9 @@ _ = json.Unmarshal(`
                 [90, 12]
             ]
         }
-    }`, &feature)
-
-switch f := feature.Geometry.(type) {
-case *geojson.LineString:
-    for _, pos := range *f {
-        fmt.Println(pos)
-    }
-}
+    }`),
+    &feature,
+)
 ```
 
 ### Marshal
@@ -55,23 +50,21 @@ case *geojson.LineString:
 GeoJSON features can be created to contain any of the supported geometry types. Additionally, an optional bounding box and property list can be added. Once the feature is constructed, it can be marshaled to JSON.
 
 ```go
-feature := geojson.Feature[*geojson.LineString]{
-    Geometry: geojson.NewLineString(
+feature := geojson.NewFeatureWithBoundingBox(
+    geojson.NewLineString(
         geojson.MakePosition(34, 12),
         geojson.MakePosition(78, 56),
         geojson.MakePosition(12, 90),
     ),
-    BBox: &geojson.BoundingBox{
+    geojson.BoundingBox{
         BottomLeft: geojson.MakePosition(1, 1),
         TopRight:   geojson.MakePosition(100, 100),
     },
-    Properties: geojson.NewPropertyList(
-        geojson.Property{
-            Name:  "foo",
-            Value: "bar",
-        },
-    ),
-}
+    geojson.Property{
+        Name:  "foo",
+        Value: "bar",
+    },
+)
 
-data, _ := json.Marshal(linestring)
+data, _ := json.Marshal(feature)
 ```
