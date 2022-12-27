@@ -1,6 +1,6 @@
 module github.com/everystreet/go-geojson/v3
 
-go 1.18
+go 1.19
 
 require (
 	github.com/golang/geo v0.0.0-20210211234256-740aa86cb551
