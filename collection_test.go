@@ -4,73 +4,75 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/everystreet/go-geojson/v2"
+	geojson "github.com/everystreet/go-geojson/v3"
 	"github.com/stretchr/testify/require"
 )
 
 func TestGeometryCollection(t *testing.T) {
-	collection := geojson.NewGeometryCollection(
-		geojson.NewPoint(9, 45).Geometry,
-		geojson.NewMultiLineString(
-			[]geojson.Position{
-				geojson.MakePosition(12, 34),
-				geojson.MakePosition(56, 78),
-				geojson.MakePosition(90, 12),
-			},
-			[]geojson.Position{
-				geojson.MakePosition(23, 45),
-				geojson.MakePosition(67, 89),
-			},
-		).Geometry,
+	feature := geojson.NewFeature(
 		geojson.NewGeometryCollection(
-			geojson.NewPoint(37, 12).Geometry,
-		).Geometry,
+			geojson.NewPoint(9, 45),
+			geojson.NewMultiLineString(
+				[]geojson.Position{
+					geojson.MakePosition(12, 34),
+					geojson.MakePosition(56, 78),
+					geojson.MakePosition(90, 12),
+				},
+				[]geojson.Position{
+					geojson.MakePosition(23, 45),
+					geojson.MakePosition(67, 89),
+				},
+			),
+			geojson.NewGeometryCollection(
+				geojson.NewPoint(37, 12),
+			),
+		),
 	)
 
-	err := collection.Geometry.Validate()
+	err := feature.Validate()
 	require.NoError(t, err)
 
-	data, err := json.Marshal(collection)
+	data, err := json.Marshal(feature)
 	require.NoError(t, err)
 	require.JSONEq(t, `
-	{
-		"type": "Feature",
-		"geometry": {
-			"type": "GeometryCollection",
-			"geometries": [
-				{
-					"type": "Point",
-					"coordinates": [45, 9]
-				},
-				{
-					"type": "MultiLineString",
-					"coordinates": [
-						[
-							[34, 12],
-							[78, 56],
-							[12, 90]
-						],
-						[
-							[45, 23],
-							[89, 67]
+		{
+			"type": "Feature",
+			"geometry": {
+				"type": "GeometryCollection",
+				"geometries": [
+					{
+						"type": "Point",
+						"coordinates": [45, 9]
+					},
+					{
+						"type": "MultiLineString",
+						"coordinates": [
+							[
+								[34, 12],
+								[78, 56],
+								[12, 90]
+							],
+							[
+								[45, 23],
+								[89, 67]
+							]
 						]
-					]
-				},
-				{
-					"type": "GeometryCollection",
-					"geometries": [
-						{
-							"type": "Point",
-							"coordinates": [12, 37]
-						}
-					]
-				}
-			]
-		}
-	}`, string(data))
+					},
+					{
+						"type": "GeometryCollection",
+						"geometries": [
+							{
+								"type": "Point",
+								"coordinates": [12, 37]
+							}
+						]
+					}
+				]
+			}
+		}`, string(data))
 
-	unmarshalled := geojson.Feature{}
+	var unmarshalled geojson.Feature[*geojson.GeometryCollection]
 	err = json.Unmarshal(data, &unmarshalled)
 	require.NoError(t, err)
-	require.Equal(t, collection, &unmarshalled)
+	require.Equal(t, feature, unmarshalled)
 }

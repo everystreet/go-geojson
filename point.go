@@ -7,20 +7,16 @@ import (
 // Point is a single set of Position.
 type Point Position
 
-// NewPoint returns a Point Feature with the specified longitude and latitude.
-func NewPoint(lat, lng float64) *Feature {
+// NewPoint returns a point with the specified longitude and latitude.
+func NewPoint(lat, lng float64) *Point {
 	pos := MakePosition(lat, lng)
-	return &Feature{
-		Geometry: (*Point)(&pos),
-	}
+	return (*Point)(&pos)
 }
 
 // NewPointWithElevation returns a Point Feature with the specified longitude, latitude and elevation.
-func NewPointWithElevation(lat, lng, elevation float64) *Feature {
+func NewPointWithElevation(lat, lng, elevation float64) *Point {
 	pos := MakePositionWithElevation(lat, lng, elevation)
-	return &Feature{
-		Geometry: (*Point)(&pos),
-	}
+	return (*Point)(&pos)
 }
 
 // Type returns the geometry type.
@@ -58,11 +54,9 @@ func (p *Point) UnmarshalJSON(data []byte) error {
 // MultiPoint is a set of Position.
 type MultiPoint []Position
 
-// NewMultiPoint returns a MultiPoint from the specified set of position.
-func NewMultiPoint(pos ...Position) *Feature {
-	return &Feature{
-		Geometry: (*MultiPoint)(&pos),
-	}
+// NewMultiPoint returns a multipoint with the specified set of positions.
+func NewMultiPoint(pos ...Position) *MultiPoint {
+	return (*MultiPoint)(&pos)
 }
 
 // Type returns the geometry type.

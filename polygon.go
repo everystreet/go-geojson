@@ -9,10 +9,8 @@ import (
 type Polygon [][]Position
 
 // NewPolygon returns a new Polygon from the supplied linear rings.
-func NewPolygon(rings ...[]Position) *Feature {
-	return &Feature{
-		Geometry: (*Polygon)(&rings),
-	}
+func NewPolygon(rings ...[]Position) *Polygon {
+	return (*Polygon)(&rings)
 }
 
 // Type returns the geometry type.
@@ -64,10 +62,8 @@ func (p *Polygon) UnmarshalJSON(data []byte) error {
 type MultiPolygon [][][]Position
 
 // NewMultiPolygon returns a new MultiPolygon from the supplied polygons.
-func NewMultiPolygon(p ...[][]Position) *Feature {
-	return &Feature{
-		Geometry: (*MultiPolygon)(&p),
-	}
+func NewMultiPolygon(p ...[][]Position) *MultiPolygon {
+	return (*MultiPolygon)(&p)
 }
 
 // Type returns the geometry type.

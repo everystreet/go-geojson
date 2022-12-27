@@ -3,24 +3,24 @@ package geojson_test
 import (
 	"testing"
 
-	geojson "github.com/everystreet/go-geojson/v2"
+	geojson "github.com/everystreet/go-geojson/v3"
 	"github.com/stretchr/testify/require"
 )
 
 func TestLineStringToS2(t *testing.T) {
-	s := geojson.NewLineString(
+	linestring := geojson.NewLineString(
 		geojson.MakePosition(7, 4),
 		geojson.MakePosition(6, 9),
 		geojson.MakePosition(2, 6),
-	).Geometry.(*geojson.LineString)
+	)
 
-	linestring, err := geojson.LineStringToS2(*s)
+	polyline, err := geojson.LineStringToS2(*linestring)
 	require.NoError(t, err)
-	require.Equal(t, 2, linestring.NumEdges())
+	require.Equal(t, 2, polyline.NumEdges())
 }
 
 func TestPolygonToS2(t *testing.T) {
-	p := geojson.NewPolygon(
+	polygon := geojson.NewPolygon(
 		[]geojson.Position{
 			geojson.MakePosition(7, 7),
 			geojson.MakePosition(4, 8),
@@ -36,10 +36,10 @@ func TestPolygonToS2(t *testing.T) {
 			geojson.MakePosition(6, 4),
 			geojson.MakePosition(4, 4),
 		},
-	).Geometry.(*geojson.Polygon)
+	)
 
-	polygon, err := geojson.PolygonToS2(*p)
+	s2Polygon, err := geojson.PolygonToS2(*polygon)
 	require.NoError(t, err)
-	require.Equal(t, 2, polygon.NumLoops())
-	require.Equal(t, 9, polygon.NumEdges())
+	require.Equal(t, 2, s2Polygon.NumLoops())
+	require.Equal(t, 9, s2Polygon.NumEdges())
 }
