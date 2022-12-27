@@ -10,7 +10,7 @@ import (
 func LineStringToS2(linestring LineString) (*s2.Polyline, error) {
 	latlngs := make([]s2.LatLng, len(linestring))
 	for i, pos := range linestring {
-		latlngs[i] = pos.LatLng
+		latlngs[i] = pos.pos
 	}
 	polyline := s2.PolylineFromLatLngs(latlngs)
 	return polyline, polyline.Validate()
@@ -38,12 +38,12 @@ func LoopToS2(loop []Position) *s2.Loop {
 	if n := len(loop); n == 0 {
 		return s2.EmptyLoop()
 	} else if n == 1 {
-		return s2.LoopFromPoints([]s2.Point{s2.PointFromLatLng(loop[0].LatLng)})
+		return s2.LoopFromPoints([]s2.Point{s2.PointFromLatLng(loop[0].pos)})
 	}
 
 	points := make([]s2.Point, len(loop)-1)
 	for i := 0; i < len(loop)-1; i++ {
-		points[i] = s2.PointFromLatLng(loop[i].LatLng)
+		points[i] = s2.PointFromLatLng(loop[i].pos)
 	}
 	return s2.LoopFromPoints(points)
 }

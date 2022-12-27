@@ -9,11 +9,11 @@ import (
 )
 
 func TestPoint(t *testing.T) {
-	feature := geojson.Feature[*geojson.Point]{
-		Geometry: geojson.NewPoint(45.4642035, 9.189982),
-	}
+	feature := geojson.NewFeature(
+		geojson.NewPoint(45.4642035, 9.189982),
+	)
 
-	err := feature.Geometry.Validate()
+	err := feature.Validate()
 	require.NoError(t, err)
 
 	data, err := json.Marshal(feature)
@@ -34,9 +34,9 @@ func TestPoint(t *testing.T) {
 }
 
 func TestPointWithElevation(t *testing.T) {
-	feature := geojson.Feature[*geojson.Point]{
-		Geometry: geojson.NewPointWithElevation(45.4642035, 9.189982, 125),
-	}
+	feature := geojson.NewFeature(
+		geojson.NewPointWithElevation(45.4642035, 9.189982, 125),
+	)
 
 	data, err := json.Marshal(feature)
 	require.NoError(t, err)
@@ -56,14 +56,14 @@ func TestPointWithElevation(t *testing.T) {
 }
 
 func TestMultiPoint(t *testing.T) {
-	feature := geojson.Feature[*geojson.MultiPoint]{
-		Geometry: geojson.NewMultiPoint(
+	feature := geojson.NewFeature(
+		geojson.NewMultiPoint(
 			geojson.MakePosition(12, 34),
 			geojson.MakePositionWithElevation(56, 78, 4),
 		),
-	}
+	)
 
-	err := feature.Geometry.Validate()
+	err := feature.Validate()
 	require.NoError(t, err)
 
 	data, err := json.Marshal(feature)

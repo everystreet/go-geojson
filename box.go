@@ -14,26 +14,26 @@ type BoundingBox struct {
 // MarshalJSON returns the JSON encoding of the box.
 // It is an error if only 1 elevation value is set - either both positions or neither must have it.
 func (b BoundingBox) MarshalJSON() ([]byte, error) {
-	if b.BottomLeft.Elevation != nil || b.TopRight.Elevation != nil {
-		if b.BottomLeft.Elevation == nil || b.TopRight.Elevation == nil {
+	if b.BottomLeft.elevation != nil || b.TopRight.elevation != nil {
+		if b.BottomLeft.elevation == nil || b.TopRight.elevation == nil {
 			return nil, fmt.Errorf("bounding box positions must be in the same dimension")
 		}
 
 		return json.Marshal(&position{
-			b.BottomLeft.LatLng.Lng.Degrees(),
-			b.BottomLeft.LatLng.Lat.Degrees(),
-			*b.BottomLeft.Elevation,
-			b.TopRight.LatLng.Lng.Degrees(),
-			b.TopRight.LatLng.Lat.Degrees(),
-			*b.TopRight.Elevation,
+			b.BottomLeft.pos.Lng.Degrees(),
+			b.BottomLeft.pos.Lat.Degrees(),
+			*b.BottomLeft.elevation,
+			b.TopRight.pos.Lng.Degrees(),
+			b.TopRight.pos.Lat.Degrees(),
+			*b.TopRight.elevation,
 		})
 	}
 
 	return json.Marshal(&position{
-		b.BottomLeft.LatLng.Lng.Degrees(),
-		b.BottomLeft.LatLng.Lat.Degrees(),
-		b.TopRight.LatLng.Lng.Degrees(),
-		b.TopRight.LatLng.Lat.Degrees(),
+		b.BottomLeft.pos.Lng.Degrees(),
+		b.BottomLeft.pos.Lat.Degrees(),
+		b.TopRight.pos.Lng.Degrees(),
+		b.TopRight.pos.Lat.Degrees(),
 	})
 }
 
@@ -59,12 +59,12 @@ func (b *BoundingBox) UnmarshalJSON(data []byte) error {
 
 // Validate the bounding box.
 func (b BoundingBox) Validate() error {
-	if (b.BottomLeft.Elevation != nil && b.TopRight.Elevation != nil) ||
-		(b.BottomLeft.Elevation == nil && b.TopRight.Elevation == nil) {
+	if (b.BottomLeft.elevation != nil && b.TopRight.elevation != nil) ||
+		(b.BottomLeft.elevation == nil && b.TopRight.elevation == nil) {
 		return fmt.Errorf("bounding box positions must be in the same dimension")
-	} else if !b.BottomLeft.LatLng.IsValid() {
+	} else if !b.BottomLeft.pos.IsValid() {
 		return fmt.Errorf("bottom left is invalid")
-	} else if !b.TopRight.LatLng.IsValid() {
+	} else if !b.TopRight.pos.IsValid() {
 		return fmt.Errorf("top right is invalid")
 	}
 	return nil

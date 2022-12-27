@@ -9,9 +9,9 @@ import (
 )
 
 func TestFeature(t *testing.T) {
-	feature := geojson.Feature[geojson.Geometry]{
-		Geometry: geojson.NewPoint(45.4642035, 9.189982),
-	}
+	feature := geojson.NewFeature(
+		geojson.NewPoint(45.4642035, 9.189982),
+	)
 
 	data, err := json.Marshal(feature)
 	require.NoError(t, err)
@@ -27,17 +27,19 @@ func TestFeature(t *testing.T) {
 	var unmarshalled geojson.Feature[geojson.Geometry]
 	err = json.Unmarshal(data, &unmarshalled)
 	require.NoError(t, err)
-	require.Equal(t, feature, unmarshalled)
+	require.Equal(t, feature.Geometry(), unmarshalled.Geometry())
+	require.Equal(t, feature.BoundingBox(), unmarshalled.BoundingBox())
+	require.Equal(t, feature.Properties(), unmarshalled.Properties())
 }
 
 func TestFeatureWithBoundingBox(t *testing.T) {
-	feature := geojson.Feature[geojson.Geometry]{
-		Geometry: geojson.NewPoint(45.4642035, 9.189982),
-		BBox: &geojson.BoundingBox{
+	feature := geojson.NewFeatureWithBoundingBox(
+		geojson.NewPoint(45.4642035, 9.189982),
+		geojson.BoundingBox{
 			BottomLeft: geojson.MakePosition(43.7032932, 7.1827761),
 			TopRight:   geojson.MakePosition(47.2856026, 11.2387051),
 		},
-	}
+	)
 
 	data, err := json.Marshal(feature)
 	require.NoError(t, err)
@@ -57,19 +59,19 @@ func TestFeatureWithBoundingBox(t *testing.T) {
 	var unmarshalled geojson.Feature[geojson.Geometry]
 	err = json.Unmarshal(data, &unmarshalled)
 	require.NoError(t, err)
-	require.Equal(t, feature, unmarshalled)
+	require.Equal(t, feature.Geometry(), unmarshalled.Geometry())
+	require.Equal(t, feature.BoundingBox(), unmarshalled.BoundingBox())
+	require.Equal(t, feature.Properties(), unmarshalled.Properties())
 }
 
 func TestFeatureWithProperties(t *testing.T) {
-	feature := geojson.Feature[geojson.Geometry]{
-		Geometry: geojson.NewPoint(45.4642035, 9.189982),
-		Properties: geojson.NewPropertyList(
-			geojson.Property{
-				Name:  "city",
-				Value: "Milan",
-			},
-		),
-	}
+	feature := geojson.NewFeature(
+		geojson.NewPoint(45.4642035, 9.189982),
+		geojson.Property{
+			Name:  "city",
+			Value: "Milan",
+		},
+	)
 
 	data, err := json.Marshal(feature)
 	require.NoError(t, err)
@@ -88,20 +90,20 @@ func TestFeatureWithProperties(t *testing.T) {
 	var unmarshalled geojson.Feature[geojson.Geometry]
 	err = json.Unmarshal(data, &unmarshalled)
 	require.NoError(t, err)
-	require.Equal(t, feature, unmarshalled)
+	require.Equal(t, feature.Geometry(), unmarshalled.Geometry())
+	require.Equal(t, feature.BoundingBox(), unmarshalled.BoundingBox())
+	require.Equal(t, feature.Properties(), unmarshalled.Properties())
 }
 
 func TestFeatureCollection(t *testing.T) {
-	collection := geojson.FeatureCollection{
-		Features: []geojson.Feature[geojson.Geometry]{
-			{
-				Geometry: geojson.NewPoint(45.4642035, 9.189982),
-			},
-			{
-				Geometry: geojson.NewPoint(13.0473748, 79.9288064),
-			},
-		},
-	}
+	collection := geojson.NewFeatureCollection(
+		geojson.NewFeature[geojson.Geometry](
+			geojson.NewPoint(45.4642035, 9.189982),
+		),
+		geojson.NewFeature[geojson.Geometry](
+			geojson.NewPoint(13.0473748, 79.9288064),
+		),
+	)
 
 	data, err := json.Marshal(collection)
 	require.NoError(t, err)
@@ -134,20 +136,18 @@ func TestFeatureCollection(t *testing.T) {
 }
 
 func TestFeatureCollectionWithBoundingBox(t *testing.T) {
-	collection := geojson.FeatureCollection{
-		Features: []geojson.Feature[geojson.Geometry]{
-			{
-				Geometry: geojson.NewPoint(45.4642035, 9.189982),
-			},
-			{
-				Geometry: geojson.NewPoint(13.0473748, 79.9288064),
-			},
-		},
-		BBox: &geojson.BoundingBox{
+	collection := geojson.NewFeatureCollectionWithBoundingBox(
+		geojson.BoundingBox{
 			BottomLeft: geojson.MakePosition(43.7032932, 7.1827761),
 			TopRight:   geojson.MakePosition(47.2856026, 11.2387051),
 		},
-	}
+		geojson.NewFeature[geojson.Geometry](
+			geojson.NewPoint(45.4642035, 9.189982),
+		),
+		geojson.NewFeature[geojson.Geometry](
+			geojson.NewPoint(13.0473748, 79.9288064),
+		),
+	)
 
 	data, err := json.Marshal(collection)
 	require.NoError(t, err)

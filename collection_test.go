@@ -9,8 +9,8 @@ import (
 )
 
 func TestGeometryCollection(t *testing.T) {
-	feature := geojson.Feature[*geojson.GeometryCollection]{
-		Geometry: geojson.NewGeometryCollection(
+	feature := geojson.NewFeature(
+		geojson.NewGeometryCollection(
 			geojson.NewPoint(9, 45),
 			geojson.NewMultiLineString(
 				[]geojson.Position{
@@ -27,9 +27,9 @@ func TestGeometryCollection(t *testing.T) {
 				geojson.NewPoint(37, 12),
 			),
 		),
-	}
+	)
 
-	err := feature.Geometry.Validate()
+	err := feature.Validate()
 	require.NoError(t, err)
 
 	data, err := json.Marshal(feature)
