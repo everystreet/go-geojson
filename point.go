@@ -54,7 +54,7 @@ func (p *Point) UnmarshalJSON(data []byte) error {
 // MultiPoint is a set of Position.
 type MultiPoint []Position
 
-// NewPoint returns a multipoint with the specified set of positions.
+// NewMultiPoint returns a multipoint with the specified set of positions.
 func NewMultiPoint(pos ...Position) *MultiPoint {
 	return (*MultiPoint)(&pos)
 }
