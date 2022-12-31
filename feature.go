@@ -63,6 +63,14 @@ func (f Feature[G]) Properties() PropertyList {
 	return f.properties
 }
 
+// WithProperties returns a copy of f with the supplied properties appended.
+func (f Feature[G]) WithProperties(properties ...Property) Feature[G] {
+	if f.box == nil {
+		return NewFeature(f.geometry, append(f.properties, properties...)...)
+	}
+	return NewFeatureWithBoundingBox(f.geometry, *f.box, append(f.properties, properties...)...)
+}
+
 // MarshalJSON returns the JSON encoding of the Feature.
 func (f Feature[G]) MarshalJSON() ([]byte, error) {
 	return json.Marshal(struct {
